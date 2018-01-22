@@ -12,8 +12,8 @@ Linux Platform:
 2. Install Opam package manager for ocaml
             Follow the link for the procedure: https://opam.ocaml.org/doc/Install.html
 3. C++ libraries:
-          i.Download and install NTL from link: http://www.shoup.net/ntl/ntl-9.10.5.tar.gz
-          ii.Download and install libfactory from liink: http://www.mathematik.uni-kl.de/ftp/pub/Math/Factory/factory-4.1.0.tar.gz
+          i.Download and install NTL from link: http://www.shoup.net/ntl/download.html
+          ii.Download and install libfactory from link: http://www.mathematik.uni-kl.de/ftp/pub/Math/Factory/
 4. Compile  Sigs-AutoGnP
           #Clone the Sigs-AutoGnP repository
           #complile the tool
