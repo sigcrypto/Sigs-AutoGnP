@@ -1,5 +1,4 @@
 # Sigs-AutoGnP
-Proof-Generation tool that extends AutoGnP to support composite data types.
 The Tool has been tested on ubuntu 16.04 platform
 
 Installation:
