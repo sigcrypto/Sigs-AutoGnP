@@ -25,4 +25,4 @@ Linux Platform:
                         # compile autognp
                         make
                         #run test-suite  (Run it from copied directory)
-                        make test-examples
+                        make test-examples 
