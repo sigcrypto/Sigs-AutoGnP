@@ -147,12 +147,27 @@ let solve_mixed_type k s =
       tacerror "t_rnd_pos: cannot invert for BS_n, (%a -> %a) not self-inverse"
         VarSym.pp s
         pp_expr k
-
-  | Arr l1, Arr l2 when Lenvar.equal l1 l2 ->
+  | ArrFq l1, ArrFq l2 when Lenvar.equal l1 l2 ->
     if Expr.equal_expr (mk_V s) (Norm.norm_expr_strong (e_replace (mk_V s) k k)) then
       (s,k)
     else
-      tacerror "t_rnd_pos: cannot invert for Arr_n, (%a -> %a) not self-inverse"
+      tacerror "t_rnd_pos: cannot invert for ArrFq_n, (%a -> %a) not self-inverse"
+        VarSym.pp s
+        pp_expr k
+
+  | ArrG l1, ArrG l2 when Lenvar.equal l1 l2 ->
+    if Expr.equal_expr (mk_V s) (Norm.norm_expr_strong (e_replace (mk_V s) k k)) then
+      (s,k)
+    else
+      tacerror "t_rnd_pos: cannot invert for ArrG_n, (%a -> %a) not self-inverse"
+        VarSym.pp s
+        pp_expr k
+
+  | ArrBSs l1, ArrBSs l2 when Lenvar.equal l1 l2 ->
+    if Expr.equal_expr (mk_V s) (Norm.norm_expr_strong (e_replace (mk_V s) k k)) then
+      (s,k)
+    else
+      tacerror "t_rnd_pos: cannot invert for ArrBSs_n, (%a -> %a) not self-inverse"
         VarSym.pp s
         pp_expr k
 

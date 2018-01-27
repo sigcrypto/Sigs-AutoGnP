@@ -116,7 +116,7 @@ let _test_solve_xor_3 () =
 
 let _test_solve_xor_4 () =
   let l = Lenvar.mk "l" in
-  let t = mk_Arr l in
+  let t = mk_ArrFq l in
   let vx = VarSym.mk "x" t in
   let vz = VarSym.mk "z" t in
   let (x,z) = (mk_V vx, mk_V vz) in
@@ -130,7 +130,7 @@ let _test_solve_xor_4 () =
 
 let _test_solve_xor_5 () =
   let l = Lenvar.mk "l" in
-  let t = mk_Arr l in
+  let t = mk_ArrFq l in
   let vx = VarSym.mk "x" t in
   let vy = VarSym.mk "y" t in  
   let vz = VarSym.mk "z" t in
@@ -145,7 +145,99 @@ let _test_solve_xor_5 () =
 
 let _test_solve_xor_6 () =
   let l = Lenvar.mk "l" in
-  let t = mk_Arr l in
+  let t = mk_ArrFq l in
+  let vx = VarSym.mk "x" t in
+  let vy = VarSym.mk "y" t in  
+  let vz = VarSym.mk "z" t in
+  let (x,y,z) = (mk_V vx, mk_V vy, mk_V vz) in
+  let a = mk_Xor [x;y] in
+  let b = mk_Xor [x;z] in  
+  let c = mk_Xor [y] in
+  let d = mk_Xor [z] in
+  let p1 = mk_V (VarSym.mk "p1" t) in
+  let p2 = mk_V (VarSym.mk "p2" t) in  
+  let p3 = mk_V (VarSym.mk "p3" t) in    
+  let I s = solve_xor [(p1,I a); (p2,I b); (p3,I c)] d in
+  failwith (fsprintf "3. Deduced context %a\n%!" pp_expr s)
+
+let _test_solve_xor_7 () =
+  let l = Lenvar.mk "l" in
+  let t = mk_ArrG l in
+  let vx = VarSym.mk "x" t in
+  let vz = VarSym.mk "z" t in
+  let (x,z) = (mk_V vx, mk_V vz) in
+  let a = mk_Xor [x] in
+  let b = mk_Xor [x;z] in  
+  let c = mk_Xor [z] in
+  let p1 = mk_V (VarSym.mk "p1" t) in
+  let p2 = mk_V (VarSym.mk "p2" t) in
+  let I c = solve_xor [(p1,I a); (p2,I b)] c in
+  failwith (fsprintf "Deduced context %a\n%!" pp_expr c)
+
+let _test_solve_xor_8 () =
+  let l = Lenvar.mk "l" in
+  let t = mk_ArrG l in
+  let vx = VarSym.mk "x" t in
+  let vy = VarSym.mk "y" t in  
+  let vz = VarSym.mk "z" t in
+  let (x,y,z) = (mk_V vx, mk_V vy, mk_V vz) in
+  let a = mk_Xor [x;y] in
+  let b = mk_Xor [x;z] in  
+  let c = mk_Xor [y;z] in
+  let p1 = mk_V (VarSym.mk "p1" t) in
+  let p2 = mk_V (VarSym.mk "p2" t) in  
+  let I c = solve_xor [(p1,I a); (p2,I b)] c in
+  failwith (fsprintf "Deduced context %a\n%!" pp_expr c)
+
+let _test_solve_xor_9 () =
+  let l = Lenvar.mk "l" in
+  let t = mk_ArrG l in
+  let vx = VarSym.mk "x" t in
+  let vy = VarSym.mk "y" t in  
+  let vz = VarSym.mk "z" t in
+  let (x,y,z) = (mk_V vx, mk_V vy, mk_V vz) in
+  let a = mk_Xor [x;y] in
+  let b = mk_Xor [x;z] in  
+  let c = mk_Xor [y] in
+  let d = mk_Xor [z] in
+  let p1 = mk_V (VarSym.mk "p1" t) in
+  let p2 = mk_V (VarSym.mk "p2" t) in  
+  let p3 = mk_V (VarSym.mk "p3" t) in    
+  let I s = solve_xor [(p1,I a); (p2,I b); (p3,I c)] d in
+  failwith (fsprintf "3. Deduced context %a\n%!" pp_expr s)
+
+let _test_solve_xor_10 () =
+  let l = Lenvar.mk "l" in
+  let t = mk_ArrBSs l in
+  let vx = VarSym.mk "x" t in
+  let vz = VarSym.mk "z" t in
+  let (x,z) = (mk_V vx, mk_V vz) in
+  let a = mk_Xor [x] in
+  let b = mk_Xor [x;z] in  
+  let c = mk_Xor [z] in
+  let p1 = mk_V (VarSym.mk "p1" t) in
+  let p2 = mk_V (VarSym.mk "p2" t) in
+  let I c = solve_xor [(p1,I a); (p2,I b)] c in
+  failwith (fsprintf "Deduced context %a\n%!" pp_expr c)
+
+let _test_solve_xor_11 () =
+  let l = Lenvar.mk "l" in
+  let t = mk_ArrBSs l in
+  let vx = VarSym.mk "x" t in
+  let vy = VarSym.mk "y" t in  
+  let vz = VarSym.mk "z" t in
+  let (x,y,z) = (mk_V vx, mk_V vy, mk_V vz) in
+  let a = mk_Xor [x;y] in
+  let b = mk_Xor [x;z] in  
+  let c = mk_Xor [y;z] in
+  let p1 = mk_V (VarSym.mk "p1" t) in
+  let p2 = mk_V (VarSym.mk "p2" t) in  
+  let I c = solve_xor [(p1,I a); (p2,I b)] c in
+  failwith (fsprintf "Deduced context %a\n%!" pp_expr c)
+
+let _test_solve_xor_12 () =
+  let l = Lenvar.mk "l" in
+  let t = mk_ArrBSs l in
   let vx = VarSym.mk "x" t in
   let vy = VarSym.mk "y" t in  
   let vz = VarSym.mk "z" t in

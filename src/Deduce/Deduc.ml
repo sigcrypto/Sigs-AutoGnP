@@ -75,7 +75,7 @@ let invert' ?ppt_inverter:(ppt=false) emaps do_div known_es to_ =
   let add_sub_solver e =
     log_i (lazy (fsprintf "@[<hov>add_sub_solver[maybe]:@ @[<hov 2>%a@]" pp_expr e));
     match e.e_ty.ty_node with
-    | BS _ | Fq | G _ | Bool | Arr _ ->
+    | BS _ | Fq | G _ | Bool | ArrFq _ | ArrG _| ArrBSs _ ->
       if is_G e.e_ty && not ppt then () else
       begin try
         let s = Hty.find sub_solver e.e_ty in
@@ -223,7 +223,9 @@ let invert' ?ppt_inverter:(ppt=false) emaps do_div known_es to_ =
     let solver, ty_rel =
       match ty.ty_node with
       | BS _ | Bool  -> DeducXor.solve_xor, equal_ty ty
-      | Arr _ | Bool  -> DeducXor.solve_xor, equal_ty ty
+      | ArrFq _ | Bool  -> DeducXor.solve_xor, equal_ty ty
+      | ArrG _ | Bool  -> DeducXor.solve_xor, equal_ty ty
+      | ArrBSs _ | Bool  -> DeducXor.solve_xor, equal_ty ty
       | Fq           -> DeducField.solve_fq, equal_ty ty
       | G _          -> DeducGroup.solve_group emaps, fun t -> is_G t || is_Fq t
       | TySym _ | Prod _ | Int -> assert false
