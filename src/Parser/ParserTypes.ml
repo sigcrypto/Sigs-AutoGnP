@@ -16,7 +16,9 @@ type parse_ty =
   | G       of string
   | TySym   of string
   | Prod    of parse_ty list
-  | Arr   of string
+  | ArrFq   of string
+  | ArrG   of string
+  | ArrBSs   of string
 
 let mk_Prod = function [t] -> t | ts -> Prod ts
 

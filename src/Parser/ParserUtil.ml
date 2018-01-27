@@ -55,7 +55,9 @@ let ty_of_parse_ty ts pty =
     | Fq        -> T.mk_Fq
     | Prod(pts) -> T.mk_Prod (L.map go pts)
     | BS(s)    -> T.mk_BS(create_lenvar ts s)
-    | Arr(s)  -> T.mk_Arr(create_lenvar ts s)
+    | ArrFq(s)  -> T.mk_ArrFq(create_lenvar ts s)
+    | ArrG(s)  -> T.mk_ArrG(create_lenvar ts s)
+    | ArrBSs(s)  -> T.mk_ArrBSs(create_lenvar ts s)
     | TySym(s)  ->
        (try
           let ts = Mstring.find s ts.ts_tydecls in
@@ -178,6 +180,8 @@ let rec expr_of_parse_expr (vmap : GU.vmap) ts (qual : string qual) pe0 =
     | CGen(s)        -> E.mk_GGen (create_groupvar ts s)
     | CZ(s)          -> E.mk_Z (create_lenvar ts s)
     | CZ(s)          -> E.mk_Z1 (create_lenvar ts s)
+    | CZ(s)          -> E.mk_Z2 (create_lenvar ts s)
+    | CZ(s)          -> E.mk_Z3 (create_lenvar ts s)
     | Quant(q,bd,pe) ->
       let b =
         List.map (fun (vs,oname) -> init_odef_params vmap ts ~qual:false oname vs) bd
@@ -305,7 +309,7 @@ let gcmd_of_parse_gcmd (vmap : GU.vmap) ts gc =
       let vts = L.combine vs tys in
       let vs = L.map (fun (v,t) -> create_var vmap ts Unqual v t) vts in
       G.GCall(vs, asym, e, os)
-    | (Type.BS _|Type.Bool|Type.G _|Type.Fq|Type.Int|Type.TySym _|Type.Arr _)
+    | (Type.BS _|Type.Bool|Type.G _|Type.Fq|Type.Int|Type.TySym _|Type.ArrFq _|Type.ArrG _|Type.ArrBSs _)
       , ([] | _ :: _ :: _) ->
       tacerror
         "Parser: wrong argument for adversary return value, expected one variable (type %a), got %i"

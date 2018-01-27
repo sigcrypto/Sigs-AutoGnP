@@ -183,8 +183,9 @@ typ :
 | LPAR l=seplist0(STAR,typ) RPAR { mk_Prod l }
 | i=ID                           { TySym(i) }
 | t=typ CARET n=NAT              { Prod(Util.replicate n t) }
-| i=TBS                          { Arr(i) }
-
+| i=TBS                          { ArrFq(i) }
+| i=TBS                          { ArrG(i) }
+| i=TBS                          { ArrBSs(i) }
 /*======================================================================
 (* * Expressions *) */
 

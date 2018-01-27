@@ -193,7 +193,9 @@ rule lex = parse
 
   (* Indexed types *)
   | "BS_"(simple_id as s)      { TBS(s) }                    (* kw: type   *)
-  | "Arr_"(simple_id as s)    { TBS(s) }		  (* kw: type   *)
+  | "ArrFq_"(simple_id as s)    { TBS(s) }		  (* kw: type   *)
+  | "ArrG_"(simple_id as s)    { TBS(s) }		  (* kw: type   *)
+  | "ArrBSs_"(simple_id as s)    { TBS(s) }		  (* kw: type   *)
   | "G"                         { TG("") }                    (* kw: type   *)
   | "G_"(number_id as s)        { TG(s) }                     (* kw: type   *)
 
