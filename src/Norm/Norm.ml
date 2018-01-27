@@ -18,7 +18,7 @@ let _log_i = mk_log Bolt.Level.INFO
     applied to variables *)
 let rec norm_type e =
   match e.e_ty.ty_node with
-  | TySym _ | Fq | Bool | Int | BS _ |Arr _-> e
+  | TySym _ | Fq | Bool | Int | BS _ |ArrFq _|ArrG _|ArrBSs _-> e
 
   | G gv    -> mk_GExp_Gen gv (mk_GLog e)   (* g ^ (log x) *)
 
