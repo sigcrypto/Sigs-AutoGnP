@@ -75,7 +75,9 @@ let op_of_nop ty = function
   | Xor   -> 
     begin match ty.ty_node with 
     | BS _ -> Opow
-    | Arr _ -> Opow
+    | ArrFq _ -> Opow
+    | ArrG _ -> Opow
+    | ArrBSs _ -> Opow
     | Bool  -> assert false
     | _     -> assert false
     end
@@ -86,7 +88,9 @@ let string_of_cnst file ty = function
   | GGen   -> fsprintf "%s.g" (gvar_mod file (destr_G_exn ty))
   | FNat i -> fsprintf "(F.ofint %i)" i
   | Z      -> fsprintf "%s.zeros" (lvar_mod file (destr_BS_exn ty))
-  | Z1     -> fsprintf "%s.zeros" (lvar_mod file (destr_Arr_exn ty))
+  | Z1     -> fsprintf "%s.zeros" (lvar_mod file (destr_ArrFq_exn ty))
+  | Z2     -> fsprintf "%s.zeros" (lvar_mod file (destr_ArrG_exn ty))
+  | Z3     -> fsprintf "%s.zeros" (lvar_mod file (destr_ArrBSs_exn ty))
   | B b    -> fsprintf "%b" b
 
 let rec expression file e = 
@@ -168,7 +172,9 @@ let rec init_res_expr ty =
   | Prod tys -> Expr.mk_Tuple (List.map init_res_expr tys)
   | Int      -> assert false
   | KeyPair _ | KeyElem _ -> assert false
-  | Arr lv   -> Expr.mk_Z1 lv
+  | ArrFq lv   -> Expr.mk_Z1 lv
+  | ArrG lv   -> Expr.mk_Z2 lv
+  | ArrBSs lv   -> Expr.mk_Z3 lv
 
 let log_oracle modn osym = 
   modn, Format.sprintf "log%s" (Osym.to_string osym)
@@ -850,7 +856,11 @@ let mu_x_def file fmt ty =
   | Int
   | KeyPair _
   | KeyElem _ -> assert false
-  | Arr lv -> 
+  | ArrFq lv -> 
+    F.fprintf fmt "%a.Dword.mu_x_def" Printer.pp_mod_name (mod_lvar file lv)
+  | ArrG lv -> 
+    F.fprintf fmt "%a.Dword.mu_x_def" Printer.pp_mod_name (mod_lvar file lv)
+  | ArrBSs lv -> 
     F.fprintf fmt "%a.Dword.mu_x_def" Printer.pp_mod_name (mod_lvar file lv)
 
 let supp_def file fmt ty = 
@@ -865,7 +875,11 @@ let supp_def file fmt ty =
   | Int
   | KeyPair _
   | KeyElem _ -> assert false
-  | Arr lv -> 
+  | ArrFq lv -> 
+    F.fprintf fmt "%a.Dword.in_supp_def" Printer.pp_mod_name (mod_lvar file lv)
+  | ArrG lv -> 
+    F.fprintf fmt "%a.Dword.in_supp_def" Printer.pp_mod_name (mod_lvar file lv)
+  | ArrBSs lv -> 
     F.fprintf fmt "%a.Dword.in_supp_def" Printer.pp_mod_name (mod_lvar file lv)
 
 let rnd_loosless file fmt (ty, l) =
@@ -890,9 +904,15 @@ let rnd_loosless file fmt (ty, l) =
   | Int   , _
   | KeyPair _, _  
   | KeyElem _,_  -> assert false
-  | Arr lv, []-> 
+  | ArrFq lv, []-> 
     F.fprintf fmt "%a.Dword.lossless" Printer.pp_mod_name (mod_lvar file lv)
-  | Arr _, _ -> assert false (* FIXME *)
+  | ArrFq _, _ -> assert false (* FIXME *)
+  | ArrG lv, []-> 
+    F.fprintf fmt "%a.Dword.lossless" Printer.pp_mod_name (mod_lvar file lv)
+  | ArrG _, _ -> assert false (* FIXME *)
+  | ArrBSs lv, []-> 
+    F.fprintf fmt "%a.Dword.lossless" Printer.pp_mod_name (mod_lvar file lv)
+  | ArrBSs _, _ -> assert false (* FIXME *)
 
 let t_rnd_loosless file ty f l = 
   F.fprintf F.str_formatter
@@ -1690,8 +1710,10 @@ let bound_rnd_indep file pos ju =
     | Bool  -> f_2  , "Bool.Dbool.mu_x_def"
     | G _   -> f_Fq,  assert false (* FIXME *)
     | Fq    -> f_Fq,  "FDistr.mu_x_def_in"
-    | _     -> assert false (* FIXME *) 
-    | Arr lv -> f_2pow (bs_length file lv), lvar_mod file lv ^".Dword.mu_x_def" in
+    | _     -> assert false (* FIXME *)
+    | ArrFq lv -> f_2pow (bs_length file lv), lvar_mod file lv ^".Dword.mu_x_def"
+    | ArrG lv -> f_2pow (bs_length file lv), lvar_mod file lv ^".Dword.mu_x_def" 
+    | ArrBSs lv -> f_2pow (bs_length file lv), lvar_mod file lv ^".Dword.mu_x_def" in
   let isize = f_rinv (Frofi size) in
   assert (l = []);
   let evs = destr_Land_nofail ju.ju_se.se_ev in

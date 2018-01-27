@@ -77,7 +77,9 @@ let pp_tvar fmt i =
 let rec pp_type file fmt ty = 
   match ty.ty_node with
   | BS lv   -> pp_tvar fmt (get_lvar file lv)
-  | Arr lv -> pp_tvar fmt (get_lvar file lv)
+  | ArrFq lv -> pp_tvar fmt (get_lvar file lv)
+  | ArrG lv -> pp_tvar fmt (get_lvar file lv)
+  | ArrBSs lv -> pp_tvar fmt (get_lvar file lv)
   | Bool     -> F.fprintf fmt "bool"
   | G gv     -> pp_tvar fmt (get_gvar file gv)
   | Fq       -> F.fprintf fmt "F.t"
@@ -280,7 +282,9 @@ let pp_ty_distr file fmt ty =
   | Int
   | KeyPair _
   | KeyElem _ -> assert false
-  | Arr lv -> F.fprintf fmt "%a.Dword.dword" pp_mod_name (mod_lvar file lv)
+  | ArrFq lv -> F.fprintf fmt "%a.Dword.dword" pp_mod_name (mod_lvar file lv)
+  | ArrG lv -> F.fprintf fmt "%a.Dword.dword" pp_mod_name (mod_lvar file lv)
+  | ArrBSs lv -> F.fprintf fmt "%a.Dword.dword" pp_mod_name (mod_lvar file lv)
 
   
 let rec pp_instr file fmt = function
