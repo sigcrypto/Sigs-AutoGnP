@@ -48,7 +48,9 @@ type cnst =
   | FNat of int (* Natural number in field, always $\geq 0$ *)
   | Z           (* $0$ bitstring (type defines length) *)
   | B of bool   (* boolean value *)
-  | Z1
+  | Z1	    (* $0$ bitstring (type defines length) *)
+  | Z2          (* $0$ bitstring (type defines length) *)
+  | Z3          (* $0$ bitstring (type defines length) *)
 
 
 type op =
@@ -108,6 +110,9 @@ let cnst_hash = function
   | Z      -> 3
   | B b    -> if b then 4 else 5
   | Z1     -> 6
+  | Z2     -> 7
+  | Z3     -> 8
+
 
 let op_hash = function
   | GExp gv        -> hcomb 1 (Groupvar.hash gv)
@@ -329,7 +334,9 @@ let valid_Xor_type ty =
   let rec valid ty =
     match ty.ty_node with
     | BS _ | Bool -> true
-    | Arr _ | Bool -> true
+    | ArrFq _ | Bool -> true
+    | ArrG _ | Bool -> true
+    | ArrBSs _ | Bool -> true
     | Prod tys    -> L.for_all valid tys
     | _           -> false
   in
@@ -397,7 +404,9 @@ let mk_Proj i e =
 let mk_InEq a b =
   mk_Not (mk_Eq a b)
 
-let mk_Z1 lv = mk_Cnst Z (mk_Arr lv)			(*Changes*)
+let mk_Z1 lv = mk_Cnst Z1 (mk_ArrFq lv)			(*Changes*)
+let mk_Z2 lv = mk_Cnst Z2 (mk_ArrG lv)			(*Changes*)
+let mk_Z3 lv = mk_Cnst Z3 (mk_ArrBSs lv)			(*Changes*)
 
 (* ** Generic functions on expressions
  * ----------------------------------------------------------------------- *)

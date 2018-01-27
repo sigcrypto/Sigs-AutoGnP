@@ -28,8 +28,9 @@ and ty_node =
   | Fq
   | Prod of ty list
   | Int (* used during extraction *)
-  | Arr of Lenvar.id				(*Changes*)
-
+  | ArrFq of Lenvar.id				(*Changes*)
+  | ArrG of Lenvar.id				(*Changes*)
+  | ArrBSs of Lenvar.id				(*Changes*)
 
 val equal_ty   : ty -> ty -> bool
 val hash_ty    : ty -> int
@@ -52,16 +53,20 @@ val mk_Fq      : ty
 val mk_Bool    : ty
 val mk_Prod    : ty list -> ty
 val mk_Int     : ty
-val mk_Arr   : Lenvar.id -> ty                             (*Changes*)
+val mk_ArrFq   : Lenvar.id -> ty                             (*Changes*)
+val mk_ArrG   : Lenvar.id -> ty                             (*Changes*)
+val mk_ArrBSs   : Lenvar.id -> ty                             (*Changes*)
 
-(* ** Indicator and destructor functions *)
+(* ** Indicqator and destructor functions *)
 
 val is_G	      : ty -> bool
 val is_Fq	      : ty -> bool
 val is_Prod	  : ty -> bool
 val destr_G_exn	  : ty -> Groupvar.id
 val destr_BS_exn     : ty -> Lenvar.id                      (*Changes*)
-val destr_Arr_exn   : ty -> Lenvar.id		 (*Changes*)
+val destr_ArrFq_exn   : ty -> Lenvar.id		 (*Changes*)
+val destr_ArrG_exn   : ty -> Lenvar.id		 (*Changes*)
+val destr_ArrBSs_exn   : ty -> Lenvar.id		 (*Changes*)
 val destr_Prod_exn    : ty -> ty list
 val destr_Prod        : ty -> (ty list) option
 

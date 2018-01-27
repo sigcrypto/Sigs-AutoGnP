@@ -22,14 +22,16 @@ type ty = {
   ty_tag : int
 }
 and ty_node =
-  | BS of Lenvar.id						(*Changes*)
+  | BS of Lenvar.id					(*Changes*)
   | Bool
   | G of Groupvar.id
   | TySym of Tysym.id
   | Fq
   | Prod of ty list
   | Int
-  | Arr of Lenvar.id						(*Changes*)
+  | ArrFq of Lenvar.id
+  | ArrG of Lenvar.id
+  | ArrBSs of Lenvar.id					(*Changes*)
 (* ** Equality, hashing, and hash consing *)
 
 let equal_ty : ty -> ty -> bool = (==)
@@ -48,8 +50,9 @@ module Hsty = Hashcons.Make (struct
     | Fq, Fq                         -> true
     | Prod ts1, Prod ts2             -> list_eq_for_all2 equal_ty ts1 ts2
     | _                              -> false
-    | Arr lv1, Arr lv2           -> Lenvar.equal lv1 lv2	      (*Changes*)
-
+    | ArrFq lv1, ArrFq lv2           -> Lenvar.equal lv1 lv2
+    | ArrG lv1, ArrG lv2           -> Lenvar.equal lv1 lv2	      (*Changes*)
+    | ArrBSs lv1, ArrBSs lv2           -> Lenvar.equal lv1 lv2
   let hash t =
     match t.ty_node with
     | BS lv        -> hcomb 1 (Lenvar.hash lv)				(*Changes*)
@@ -59,7 +62,9 @@ module Hsty = Hashcons.Make (struct
     | Fq            -> 5
     | Prod ts       -> hcomb_l hash_ty 6 ts
     | Int           -> 7
-    | Arr lv      -> hcomb 8 (Lenvar.hash lv)                               (*Changes*)
+    | ArrFq lv5      -> hcomb 8 (Lenvar.hash lv5)
+    | ArrG lv      -> hcomb 8 (Lenvar.hash lv)
+    | ArrBSs lv      -> hcomb 8 (Lenvar.hash lv)                               (*Changes*)
 
   let tag n t = { t with ty_tag = n }
 end)
@@ -81,7 +86,9 @@ let mk_ty n = Hsty.hashcons {
 }
 
 let mk_BS lv = mk_ty (BS lv)				(*Changes*)
-let mk_Arr lv = mk_ty (Arr lv)				(*Changes*)
+let mk_ArrFq lv5 = mk_ty (ArrFq lv5)			(*Changes*)
+let mk_ArrG lv = mk_ty (ArrG lv)				(*Changes*)
+let mk_ArrBSs lv = mk_ty (ArrBSs lv)			(*Changes*)
 
 let mk_G gv = mk_ty (G gv)
 
@@ -119,12 +126,22 @@ let destr_G_exn ty =
 
 let destr_BS_exn ty =					(*Changes*)
   match ty.ty_node with
-  | BS lv -> lv						(*Changes*)
+  | BS lv -> lv					(*Changes*)
   | _     -> raise Not_found
 
-let destr_Arr_exn ty =					(*Changes*)
+let destr_ArrFq_exn ty =				(*Changes*)
   match ty.ty_node with
-  | Arr lv -> lv						(*Changes*)
+  | ArrFq lv5 -> lv5					(*Changes*)
+  | _     -> raise Not_found
+
+let destr_ArrG_exn ty =	   			            (*Changes*)
+  match ty.ty_node with
+  | ArrG lv -> lv					(*Changes*)
+  | _     -> raise Not_found
+
+let destr_ArrBSs_exn ty =	   			(*Changes*)
+  match ty.ty_node with
+  | ArrBSs lv -> lv					(*Changes*)
   | _     -> raise Not_found
 
 let destr_Prod_exn ty =
@@ -147,7 +164,9 @@ let pp_group fmt gv =
 let rec pp_ty fmt ty =
   match ty.ty_node with
   | BS lv             -> F.fprintf fmt "BS_%s" (Lenvar.name lv)		(*Changes*)
-  | Arr lv          -> F.fprintf fmt "Arr_%s" (Lenvar.name lv)
+  | ArrFq lv5         -> F.fprintf fmt "ArrFq_%s" (Lenvar.name lv5)
+  | ArrG lv           -> F.fprintf fmt "ArrG_%s" (Lenvar.name lv)
+  | ArrBSs lv         -> F.fprintf fmt "ArrBSs_%s" (Lenvar.name lv)
   | Bool              -> F.fprintf fmt "Bool"
   | Fq                -> F.fprintf fmt "Fq"
   | TySym ts          -> F.fprintf fmt "%s" (Tysym.name ts)

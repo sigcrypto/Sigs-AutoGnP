@@ -153,6 +153,8 @@ let pp_cnst fmt c ty =
   | FNat n -> F.fprintf fmt "%i" n
   | Z      -> F.fprintf fmt "0%%%a" pp_ty ty
   | Z1      -> F.fprintf fmt "0%%%a" pp_ty ty
+  | Z2      -> F.fprintf fmt "0%%%a" pp_ty ty
+  | Z3      -> F.fprintf fmt "0%%%a" pp_ty ty
   | B b    -> F.fprintf fmt "%b" b
 
 (** Constructor above the current expression. *)
@@ -534,7 +536,9 @@ let sub t =
           (L.mapi (fun i _ -> aux (mk_Proj i e1) (mk_Proj i e2)) lt) in
       mk_Tuple es, mk_Tuple zs
     | Int | TySym _ -> assert false
-    | Arr t -> mk_Xor [e1;e2], mk_Z1 t
+    | ArrFq t -> mk_Xor [e1;e2], mk_Z1 t
+    | ArrG t -> mk_Xor [e1;e2], mk_Z2 t
+    | ArrBSs t -> mk_Xor [e1;e2], mk_Z3 t
   in
   let x1 = VarSym.mk "x" t in
   let x2 = VarSym.mk "x" t in
