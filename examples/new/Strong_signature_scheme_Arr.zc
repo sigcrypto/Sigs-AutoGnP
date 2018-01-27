@@ -1,0 +1,159 @@
+(* Boneh-Boyen Strong Signature Scheme *)   
+bilinear_map ez: G * G -> G_t. 
+bilinear_map e: G_1 * G_2 -> G_t. 
+
+(* Oracles *)
+oracle Sign : () -> (G * G).
+oracle Sign1 : ()-> (G).
+
+(* Weak adversary, B *)  
+adversary B1 : () -> (ArrFq_q).  		
+adversary B2 : () -> (G_1 * G_2 * G_2 * G_t * ArrG_q).
+adversary B3 : () -> (Fq).
+adversary B4 : (Fq * G_1 * Fq) -> (Fq * G_1). 
+adversary B5 : (Fq * Fq * G_1 * G_1) -> Bool.
+
+(* Strong adversaries: Type 1/2 are determined by B’s coin toss *)
+adversary A1 : (G_1 * G_2 * G_2 * G_2 * G_t) -> (ArrFq_q).
+adversary A2 : (G_1 * G_2 * G_2 * G_2 * G_t * ArrFq_q) -> (G_1).
+adversary A3 : (G_1 * G_2 * G_2 * G_2 * G_t * ArrFq_q) -> (G_1).
+
+adversary A_weak : (Fq * G_1) -> Bool. 
+assumption weak_bbsig  
+[mPri,x,y,rPri<-$ Fq; b <- A_weak(mPri, g_1^(1/(mPri + x )));]
+[mPri,t <-$ Fq; b <-A_weak(mPri, g_1^(t));].   
+
+(* Weak B's challenger *)
+oracle bChallenger: ()->(G_1 * G_2 * G_2 * G_t * ArrG_q).
+oracle sign1 : ()->(G_1).
+oracle sign2 : ()->(Fq).
+oracle sign3 : ()->(G_1). 
+oracle sign4 : ()->(Fq * G_1).  
+
+(* B gets pk and signatures from its challenger *)
+bound_adv [    
+ mPrim, rPrim, x1',y1 <-$ Fq;
+ a1,a2,a3<-$ Fq; 
+
+ (w)<- B1();
+   mPrime, rPrime, x'',y <-$ Fq; 
+  assert((mPrime + (y * rPrime) + x'') <> 0);
+    
+  x3,c,g1p8,g2p8,x <-$ Fq;
+  let u = g_2^x;
+  assert((x3+c)<>0); 
+  let x1=g^(1/(x3+c)); 
+  
+  s' <- ArrFq_q;
+  
+  let i=1;
+  while (i<q-1){
+  let S[i] = g_1 ^ s'[i]; 
+  }
+  
+  let g2prime18 = g_2^(g2p8);
+  let g1prime18 = g_1^(g1p8);       
+  let zp = e(g1prime18,g2prime18); 
+
+  (* Challenger does setup, returns public key and signatures *)
+  (g1,g2,u1,zp1,S) <- B2() with
+  bChallenger() = { 
+  let pk = (g_1,g_2,u,zp);
+  assert((x + w[i])<>0);
+  let S[i] = g_1^(1/(x + w[i+1]));      
+  return (g_1,g_2,u,zp,S) 
+}; 
+
+(*Challenge-response phase of strong adversary *)
+cmode <-$ Bool; 
+x' <-$ Fq;
+while(cmode = 0){
+y <-$ Fq;
+pk1 = (g_1^1, g_2^1, u1, g_2^(y), zp1);
+}
+
+while(cmode = 1){
+x’ <-$ Fq;
+let pk2 = (g_1^1, g_2^1, u1, g_2^(x'),zp1);
+} 
+m, o, r<-$ ArrFq_q;
+let i=1;
+while (i<q-1){
+m[i] = g_1 ^ o[i]; 
+i = i + 1;
+}
+ 
+let t1 = (m_1,r_1,Omega1); 
+let t2 = (m_2,r_2,Omega2); 
+
+(m) <- A1(g_1^1, g_2^1, u1, g_2^(y), zp1);
+
+(*----for Cmode 0 Begin--------*)  
+(sigmaPrime1) <- A2(g_1^1, g_2^1, u1, g_2^(y), zp1, m) with 
+sign1() = {
+
+guard (cmode <> false); 
+let i = 1
+while(i < q-1){
+let tup = g_2^ m[i] * u1^(r_1);
+let sigmaPrime = g_1^(1/(mPrime + (y * rPrime) + x'')); 
+i = i + 1;
+}
+return (sigmaPrime) 
+};
+
+(wPrime2) <- B3() with 
+sign2()= { 
+  guard (cmode <> true);
+ let wPrime = mPrime + y * rPrime;
+ return (wPrime)
+};
+ (*------for Cmode 0 End--------*)
+
+ (*----for Cmode 1 begin--------*)
+ (*Two common name adversaries is not allowed*)
+(sigmaPrime)<-A3(g_1^1, g_2^1, u1, g_2^(x'),zp1, m) with sign3()= {
+guard (cmode <> true);
+let i = 1
+while(i < q-1){
+let tup = g_2^m[i] * u1^(r_1);
+guard((mPrime + y * rPrime + x'')= 0);
+let sigmaPrime = g_1^(1/(mPrime + (y * rPrime) + x'')); 
+i = i + 1;
+}
+  return (sigmaPrime)    
+}; 
+
+mi,ri <-$ Fq; let omegi = g_2^(mi+ri); 
+assert((rPrime - ri)<>0);
+let tau = (mPrime - mi)/(rPrime - ri);
+assert((tau + mPrime + y *rPrime)<>0); 
+
+ (mPrimeR,gen) <- B4(mPrime , sigmaPrime3, rPrime) with
+ sign4()= {
+ guard (cmode<>true);  
+ (*(mi,ri,omegi) = read (tup,i); *)
+ (* B recovers the secret key, x *)
+ return (mPrime, g_1^(1/(tau + mPrime + y *rPrime))) 
+ };
+
+  b <-$ Bool;
+  d <-$ Fq;
+  let ret = b?sigmaPrime3:g_1^d;   
+  b' <- B5(mPrime,rPrime,sigmaPrime3,g_1^d);
+]: b = b'.  
+norm.
+
+move mPrim 1. 
+move x1' 2.
+move y1 3.
+move rPrim 4.
+abstract 5 arg1 ((mPrim + (y1*rPrim)), g_1^(1/(mPrim+ x1'+ (y1*rPrim)))). 
+abstract 44 res (b = b').
+assumption_decisional weak_bbsig -> [arg1 res] q. 
+norm.
+
+indep!.
+print_proof!.
+qed.
+extract "extraction/Strong_signature_scheme.zc".

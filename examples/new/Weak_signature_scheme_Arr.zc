@@ -1,0 +1,128 @@
+(* Boneh-Boyen Weak Signature Scheme *) 
+bilinear_map ez: G * G -> G_t. 
+bilinear_map zprime: G * G -> G_t. 
+adversary A1 : () -> (ArrFq_q).
+adversary A2 : (G * G * G * G_t * ArrFq_q) -> (Fq * G).
+adversary B1 : () -> (G).
+adversary B2 : (Fq * G *  G) -> Bool.
+adversary B3 : () -> (G * ArrFq_q).
+
+oracle Sign : () -> (G * G).
+oracle Sign1 : ()-> (G). 
+
+adversary A_qsdh: (ArrG_q * G) -> Bool. (*/ FIX ME / Computational*)
+assumption qsdh
+ [r1,r2,r3,c<-$ Fq; b <- A_qsdh(ArrG_q,g^(1/(r1+c)));] 
+ [r1,r2,r3,t <-$ Fq; b <- A_qsdh(ArrG_q,g^(t));].
+ (* r1, r2 , r3 of Fq type represents x, x*x , x*x*x in the bound code which is of type Fq*)
+
+(* Computational Assumption Definitions:  
+adversary A_qsdh: (ArrG_q) -> Bool.
+assumption assm_qsdh
+ [x <-$ Fq; (c, g_1^{1/x+c}) <- A_qsdh(ArrG_q);]
+*)
+
+bound_adv [   
+ a1,a2,a3<-$ Fq; 
+ mPrime<-$ Fq; 
+
+ x<-$ Fq; 
+ (g,A) <- B3() with
+    {
+      x <-$ Fq;      
+      A <-$ ArrG_q;
+      let i = 1;
+      While (i<=q){
+      A[i] = g_1 ^ (x ^ i); 
+    }
+      return (g,A);
+} 
+  (m) <- A1();
+  y <-$ Fq ;
+  Al <-$ ArrFq_q; (Alpha Array)   
+  g1p,g2p <-$ Fq;
+  let g2prime1= g^(g2p);  
+  let g1prime1= g^(g1p);
+  let zprime = ez(g1prime1, g2prime);
+i=1;
+while(i<=q-1)
+{ 
+ sum = sum + A[i] * (y^i);
+ g2prime = g2prime * (A[i] ^ Al[i]);
+i = i + 1;
+}
+let i = 1; 
+While(i<=q-1)
+   {
+     h = h * A[i]^Al[i-1];
+   };
+
+  let pk = (g1prime1, g2prime,h,zprime);		
+  m <-$ ArrFq_q;
+  s'<-$ ArrFq_q;
+
+i=1;
+while(i<=q-1)
+{ 
+ let S[i] = [g ^ (s'[i])];
+ i = i + 1;
+}
+
+  (* Challenger generates signatures*)
+  si <-$ Fq; 
+  let sigma1 = g^(si); 
+  beta <-$ ArrFq_q;
+  assert((x + mPrime) <> 0); 
+   
+   (mPrime,sigmaPrime) <- A2(g1prime1, g2prime,h,zprime,m) with
+   Sign() = { 
+   let j=1;
+   while(j<=q-1)
+   {
+     S[j] = S[j] * A[j]^(beta[i]); 
+     let sigma = log(S[i]);
+     guard(if (x + m_i = 0) let sigma = 1);
+     let j = j + 1;
+}
+  mPrime <-$ Fq;
+  let sigmaPrime = g^(1/(x+mPrime));
+  return(mPrime,sigmaPrime); 
+   };
+
+   negGamma <-$ Fq; (* assert (negGamm <> 0); *)
+   assert(negGamma<>0);
+
+   (w) <- B1() with   
+   Sign1() = {
+   gamma <-$ ArrFq_g                           
+   fin <-$ Fq; 
+   let i = 1; 
+   While(i<=q-1)
+   {
+   let final = final* A[i]^(-gamma[i]);
+   i = i + 1;  
+   };
+   let w = (sigmaPrime * final)^(1/negGamma);
+   return (w) 
+   }; 
+
+b <-$ Bool; 
+d <-$ Fq;
+let ret = b?w:g^d; 
+b' <- B2(mPrime,w,g^d); 
+(* Necessary changes For the computational assumption:- the event should be: (m <> mPrime)/ mPrime not equal to any {m1,m2.....mq}*)   
+] : b = b'.  
+norm.
+
+move a1 1.
+move a2 2.
+move a3 3.
+abstract 5 arg (g^(a1), g^(a1*a1), g^(a1*a1*a1),g^(1/(a1+mPrime))).
+abstract 30 res (b = b'). 
+assumption_decisional qsdh -> [5 res] q. 
+norm.
+
+indep!.
+print_proof!.
+qed.
+extract "extraction/weak_signature_scheme.zc".
