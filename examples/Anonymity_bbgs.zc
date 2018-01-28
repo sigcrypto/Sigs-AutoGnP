@@ -17,7 +17,6 @@ assumption dlin
   [x,y,r1,r2,r3,t <-$ Fq; b <- A_dlin(g_1^(r1),g_1^(r2),g_1^(r3),g_1^(x*r1),g_1^(y*r2),g_1^(t));]. 
 
 operator H : Fq -> BS_s.
-(* need to fix the proof for LE case*)
 (* adversary A_le : (G_1 * G_1 * Fq * G_1) -> Bool.
 assumption le
 [r1,r2,x,y,m,p,q<-$ Fq; b <- A_le(g_1^(r1*p),g_1^(r2*q),m,g_1^((r1*x) * (p+q)));]
