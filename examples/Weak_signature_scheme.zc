@@ -14,7 +14,6 @@ adversary A_qsdh: (G * G * G * G) -> Bool.
 assumption qsdh
  [r1,r2,r3,c<-$ Fq; b <- A_qsdh(g^(r1),g^(r2),g^(r3),g^(1/(r1+c)));] 
  [r1,r2,r3,t <-$ Fq; b <- A_qsdh(g^(r1),g^(r2),g^(r3),g^(t));].
-(* r1, r2 , r3 of Fq type represents x, x*x , x*x*x in the bound code which is of type Fq*)
 
 bound_adv [   
  a1,a2,a3<-$ Fq; 
