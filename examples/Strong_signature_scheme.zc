@@ -13,7 +13,6 @@ adversary B3 : () -> (Fq).
 adversary B4 : (Fq * G_1 * Fq) -> (Fq * G_1). 
 adversary B5 : (Fq * Fq * G_1 * G_1) -> Bool.
 
-(* Strong adversaries: Type 1/2 are determined by B’s coin toss *)
 adversary A1 : (G_1 * G_2 * G_2 * G_2 * G_t) -> (Fq * Fq).
 adversary A2 : (G_1 * G_2 * G_2 * G_2 * G_t * Fq * Fq) -> (G_1).
 adversary A3 : (G_1 * G_2 * G_2 * G_2 * G_t * Fq * Fq) -> (G_1).
@@ -22,7 +21,7 @@ adversary A_weak : (Fq * G_1) -> Bool.
 assumption weak_bbsig  
 [mPri,x,y,rPri<-$ Fq; b <-A_weak(mPri, g_1^(1/(mPri+ (y*rPri) + x )));]
 [mPri,t <-$ Fq; b <-A_weak(mPri, g_1^(t));].   
-(* *)
+
 
  (* Weak B's challenger *)
 oracle bChallenger: ()->(G_1 * G_2 * G_2 * G_t * G_1 * G_1).
@@ -114,7 +113,6 @@ sign2()= {
  (*------for Cmode 0 End--------*)
 
  (*----for Cmode 1 begin--------*)
- (*Two common name adversaries is not allowed*)
 (sigmaPrime3)<-A3(g_1^1, g_2^1, u1, g_2^(x'),zp1,m11,m12) with sign3()= {
   guard (cmode <> true);
   let R1 = (x'+ m11)/w_1; 
