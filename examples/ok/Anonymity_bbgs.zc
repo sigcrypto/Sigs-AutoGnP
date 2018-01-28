@@ -1,0 +1,85 @@
+(*Special case q = 3 *)
+bilinear_map e : G_1 * G_2 -> G_t.   
+(* Signature adversary *)
+adversary A1: (G_1 * G_2 * G_1 * G_1 * G_1 * G_2 * Fq * G_1 * Fq * G_1* Fq * Fq * Fq) -> (BS_s * BS_s * BS_s). 
+adversary A2: (G_1 * G_2 * G_1 * G_1 * G_1 * G_2 * Fq * Fq * Fq * BS_s * BS_s * BS_s * G_1 * G_1) -> (Bool).
+
+adversary B1: () -> (G_1 * G_1 * G_1).
+oracle Encrypt : (Fq * Fq) -> (G_1 * G_1 * G_1).
+oracle org1 : () -> (BS_s * BS_s * BS_s).
+oracle org2: () -> (G_1).
+
+operator Hash :(Fq * G_1 * G_1 * G_1* G_1 * G_1 * G_t * G_1 * G_1)->BS_s.
+
+adversary A_dlin: (G_1 * G_1 * G_1 * G_1 * G_1 * G_1) -> Bool.
+assumption dlin
+  [x,y,r1,r2,r3 <-$ Fq;   b <- A_dlin(g_1^(r1),g_1^(r2),g_1^(r3),g_1^(x*r1),g_1^(y*r2),g_1^((x+y)*r3));]
+  [x,y,r1,r2,r3,t <-$ Fq; b <- A_dlin(g_1^(r1),g_1^(r2),g_1^(r3),g_1^(x*r1),g_1^(y*r2),g_1^(t));]. 
+
+operator H : Fq -> BS_s.
+(* adversary A_le : (G_1 * G_1 * Fq * G_1) -> Bool.
+assumption le
+[r1,r2,x,y,m,p,q<-$ Fq; b <- A_le(g_1^(r1*p),g_1^(r2*q),m,g_1^((r1*x) * (p+q)));]
+[r1,r2,x,y,m,p,q,t<-$ Fq; b <- A_le(g_1^(r1*p),g_1^(r2*q),m,g_1^(t));]. 
+*) 
+bound_adv [  
+ 
+  a1,a2,a3<-$ Fq;  
+  a11,b11 <-$ Fq; 
+  let j = g_1^(a1); let k = g_1^(a2); let l = g_1^(a3);             
+
+  (* Generate GS adversary public key *)
+  gamma,m,n,q1<-$ Fq;
+  let w = g_2^(gamma);
+  let pkgs = (g_1,g_2,j,k,l,w);
+  let z1= g_1^(1/(gamma+m));
+  let z2=g_1^(n);
+  H1,H2,H3 <-$ Fq;
+    
+  (d1,e1,f1) <- A1(g_1,g_2,j,k,l,w,m,z1,n,z2,H1,H2,H3) with 
+  org1() = {
+          let H11 = H(H1);
+          (*Loop 1*)
+          let H12 = (H1 = H2)? H11: H(H2);
+          (*Loop 2 *)
+          let H13 = (H2 = H3)? H12: H(H3);
+          return (H11,H12,H13)
+          };   
+  
+  c,salpha,sbeta,sx,sdelta1,sdelta2,alpha,beta<-$ Fq;
+  b <-$ Bool;
+  assert((gamma+m)<>0);
+  let K0 = (m,g_1^(1/(gamma+m)));
+  let K1 = (n,g_1^(n));
+  
+  let mb = b?m:n;
+  let Kb = b?(g_1^(1/(gamma+m))):(g_1^(n));
+  let Kb1 = g_1^(1/(gamma+m));
+  let Kb2 = g_1^n;
+  
+  let T1 = g_1^(a1*a11);  let T2 = g_1^(a2*b11);
+  let T3 = Kb * g_1^((a3)*(a11+b11)); 
+  let R1 = g_1^(a1*salpha) * T1^(-c);  
+  let R2 = g_1^(a2*sbeta) * T2^(-c);     
+  let R3 = e(T3,g_2)^(sx) * e(l,w)^(-salpha-sbeta) * e(l,g_2)^(-sdelta1-sdelta2) * (e(T3,w)/e(g_1,g_2))^(c); 
+  let R4 = T1^(sx) * j^(-sdelta1);   
+  let R5 = T2^(sx) * k^(-sdelta2);
+  let i = Hash(m,T1,T2,T3,R1,R2,R3,R4,R5);
+  let sigma = (T1,T2,T3,i,salpha,sbeta,sx,sdelta1,sdelta2);
+  
+  b' <- A2(g_1,g_2,j,k,l,w,H1,H2,H3,d1,e1,f1,Kb1,Kb2);    
+ 
+] : b = b'. 
+norm.
+
+move a11 1.
+move b11 2. 
+abstract 6 arg (g_1^(a1), g_1^(a2), g_1^(a3), g_1^(a11*a1), g_1^(b11*a2),g_1^(a3*a11 + a3*b11)).
+abstract 26 res (b = b').
+assumption_decisional dlin -> [6 26] q. 
+norm.
+
+indep!.
+print_proof!.
+qed.
+extract "extraction/Anonimity_bbgs.zc".
