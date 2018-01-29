@@ -225,7 +225,7 @@ let mk_FOne = mk_Cnst (FNat 1) mk_Fq
 
 let mk_FZ = mk_Cnst (FNat 0) mk_Fq
 
-let mk_Z lv = mk_Cnst Z (mk_BS lv)			(*Changes*)
+let mk_Z lv = mk_Cnst Z (mk_BS lv)			
 
 let mk_B  b = mk_Cnst (B b) mk_Bool
 
@@ -404,9 +404,9 @@ let mk_Proj i e =
 let mk_InEq a b =
   mk_Not (mk_Eq a b)
 
-let mk_Z1 lv = mk_Cnst Z1 (mk_ArrFq lv)			(*Changes*)
-let mk_Z2 lv = mk_Cnst Z2 (mk_ArrG lv)			(*Changes*)
-let mk_Z3 lv = mk_Cnst Z3 (mk_ArrBSs lv)			(*Changes*)
+let mk_Z1 lv = mk_Cnst Z1 (mk_ArrFq lv)			
+let mk_Z2 lv = mk_Cnst Z2 (mk_ArrG lv)			
+let mk_Z3 lv = mk_Cnst Z3 (mk_ArrBSs lv)			
 
 (* ** Generic functions on expressions
  * ----------------------------------------------------------------------- *)
