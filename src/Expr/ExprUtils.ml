@@ -546,10 +546,10 @@ let sub t =
   (x1,(x2,e)), z
 (*
   in
-  let x3 = VarSym.mk "x" t1 in                       (*Changes*)
-  let x4 = VarSym.mk "x" t1 in		   (*Changes*)
-  let e, z = aux (mk_V x3) (mk_V x4) in		   (*Changes*)
-  (x3,(x4,e)), z  				   (*Changes*)
+  let x3 = VarSym.mk "x" t1 in                       
+  let x4 = VarSym.mk "x" t1 in		   
+  let e, z = aux (mk_V x3) (mk_V x4) in		   
+  (x3,(x4,e)), z  				   
 *)
 let mk_Zero t = snd (sub t)
 
