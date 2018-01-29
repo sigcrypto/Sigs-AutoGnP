@@ -10,7 +10,7 @@ adversary B3 : () -> (G * ArrFq_q).
 oracle Sign : () -> (G * G).
 oracle Sign1 : ()-> (G). 
 
-adversary A_qsdh: (ArrG_q * G) -> Bool. (*/ FIX ME / Computational*)
+adversary A_qsdh: (ArrG_q * G) -> Bool.
 assumption qsdh
  [r1,r2,r3,c<-$ Fq; b <- A_qsdh(ArrG_q,g^(1/(r1+c)));] 
  [r1,r2,r3,t <-$ Fq; b <- A_qsdh(ArrG_q,g^(t));].
@@ -33,13 +33,13 @@ bound_adv [
       A <-$ ArrG_q;
       let i = 1;
       While (i<=q){
-      A[i] = g_1 ^ (x ^ i); 
+      A[i] = g ^ (x ^ i); 
     }
       return (g,A);
 } 
   (m) <- A1();
   y <-$ Fq ;
-  Al <-$ ArrFq_q; (Alpha Array)   
+  Al <-$ ArrFq_q;   
   g1p,g2p <-$ Fq;
   let g2prime1= g^(g2p);  
   let g1prime1= g^(g1p);
@@ -117,7 +117,7 @@ norm.
 move a1 1.
 move a2 2.
 move a3 3.
-abstract 5 arg (g^(a1), g^(a1*a1), g^(a1*a1*a1),g^(1/(a1+mPrime))).
+abstract 5 arg (A,g^(1/(x+mPrime))).
 abstract 30 res (b = b'). 
 assumption_decisional qsdh -> [5 res] q. 
 norm.
