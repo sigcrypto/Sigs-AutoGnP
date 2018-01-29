@@ -25,7 +25,6 @@ let suite = "Type" >::: ["test_type" >:: test_type ]
 let _ =
   run_test_tt_main suite
 
-(* Array Changes *)
 
 let test_type1 _ =
   let tv = Lenvar.mk "l" in
@@ -51,5 +50,4 @@ let suite1 = "Type" >::: ["test_type1" >:: test_type1 ]
 let _ =
   run_test_tt_main suite1
 
-(*Array Changes*)
 
