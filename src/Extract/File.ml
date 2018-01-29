@@ -334,7 +334,7 @@ let empty_file =
   empty
 
 let add_lvar file lv = 
-  let name = top_name file ("BS_" ^ Lenvar.name lv) in                 (*Changes*)
+  let name = top_name file ("BS_" ^ Lenvar.name lv) in                 
   let info = {
     tvar_mod = name;
     tvar_ty  = "word";
@@ -342,25 +342,25 @@ let add_lvar file lv =
   Lenvar.H.add file.levar lv info
 
 let add_lvar file lv = 
-  let name = top_name file ("ArrFq_" ^ Lenvar.name lv) in                 (*Changes*)
+  let name = top_name file ("ArrFq_" ^ Lenvar.name lv) in                
   let info = {
-    tvar_mod = name;                                                   (*Changes*)
+    tvar_mod = name;                                                   
     tvar_ty  = "word";
   } in
   Lenvar.H.add file.levar lv info				(*Changes*)
 
 let add_lvar file lv = 
-  let name = top_name file ("ArrG_" ^ Lenvar.name lv) in                 (*Changes*)
+  let name = top_name file ("ArrG_" ^ Lenvar.name lv) in                 
   let info = {
-    tvar_mod = name;                                                   (*Changes*)
+    tvar_mod = name;                                                   
     tvar_ty  = "word";
   } in
   Lenvar.H.add file.levar lv info				(*Changes*)
 
 let add_lvar file lv = 
-  let name = top_name file ("ArrBSs_" ^ Lenvar.name lv) in                 (*Changes*)
+  let name = top_name file ("ArrBSs_" ^ Lenvar.name lv) in                 
   let info = {
-    tvar_mod = name;                                                   (*Changes*)
+    tvar_mod = name;                                                   
     tvar_ty  = "word";
   } in
   Lenvar.H.add file.levar lv info				(*Changes*)
