@@ -22,7 +22,7 @@ type ty = {
   ty_tag : int
 }
 and ty_node =
-  | BS of Lenvar.id					(*Changes*)
+  | BS of Lenvar.id					
   | Bool
   | G of Groupvar.id
   | TySym of Tysym.id
@@ -31,7 +31,7 @@ and ty_node =
   | Int
   | ArrFq of Lenvar.id
   | ArrG of Lenvar.id
-  | ArrBSs of Lenvar.id					(*Changes*)
+  | ArrBSs of Lenvar.id					
 (* ** Equality, hashing, and hash consing *)
 
 let equal_ty : ty -> ty -> bool = (==)
@@ -43,7 +43,7 @@ module Hsty = Hashcons.Make (struct
 
   let equal t1 t2 =
     match t1.ty_node, t2.ty_node with
-    | BS lv1, BS lv2               -> Lenvar.equal lv1 lv2               (*Changes*)
+    | BS lv1, BS lv2               -> Lenvar.equal lv1 lv2               
     | Bool, Bool                     -> true
     | G gv1, G gv2                   -> Groupvar.equal gv1 gv2
     | TySym ts1, TySym ts2           -> Tysym.equal ts1 ts2
@@ -51,11 +51,11 @@ module Hsty = Hashcons.Make (struct
     | Prod ts1, Prod ts2             -> list_eq_for_all2 equal_ty ts1 ts2
     | _                              -> false
     | ArrFq lv1, ArrFq lv2           -> Lenvar.equal lv1 lv2
-    | ArrG lv1, ArrG lv2           -> Lenvar.equal lv1 lv2	      (*Changes*)
+    | ArrG lv1, ArrG lv2           -> Lenvar.equal lv1 lv2	      
     | ArrBSs lv1, ArrBSs lv2           -> Lenvar.equal lv1 lv2
   let hash t =
     match t.ty_node with
-    | BS lv        -> hcomb 1 (Lenvar.hash lv)				(*Changes*)
+    | BS lv        -> hcomb 1 (Lenvar.hash lv)				
     | Bool          -> 2
     | G gv          -> hcomb 3 (Groupvar.hash gv)
     | TySym gv      -> hcomb 4 (Tysym.hash gv)
@@ -64,7 +64,7 @@ module Hsty = Hashcons.Make (struct
     | Int           -> 7
     | ArrFq lv5      -> hcomb 8 (Lenvar.hash lv5)
     | ArrG lv      -> hcomb 8 (Lenvar.hash lv)
-    | ArrBSs lv      -> hcomb 8 (Lenvar.hash lv)                               (*Changes*)
+    | ArrBSs lv      -> hcomb 8 (Lenvar.hash lv)                              
 
   let tag n t = { t with ty_tag = n }
 end)
@@ -85,10 +85,10 @@ let mk_ty n = Hsty.hashcons {
   ty_tag  = (-1)
 }
 
-let mk_BS lv = mk_ty (BS lv)				(*Changes*)
-let mk_ArrFq lv5 = mk_ty (ArrFq lv5)			(*Changes*)
-let mk_ArrG lv = mk_ty (ArrG lv)				(*Changes*)
-let mk_ArrBSs lv = mk_ty (ArrBSs lv)			(*Changes*)
+let mk_BS lv = mk_ty (BS lv)				
+let mk_ArrFq lv5 = mk_ty (ArrFq lv5)			
+let mk_ArrG lv = mk_ty (ArrG lv)				
+let mk_ArrBSs lv = mk_ty (ArrBSs lv)			
 
 let mk_G gv = mk_ty (G gv)
 
@@ -124,24 +124,24 @@ let destr_G_exn ty =
   | G gv -> gv
   | _    -> raise Not_found
 
-let destr_BS_exn ty =					(*Changes*)
+let destr_BS_exn ty =					
   match ty.ty_node with
-  | BS lv -> lv					(*Changes*)
+  | BS lv -> lv				
   | _     -> raise Not_found
 
-let destr_ArrFq_exn ty =				(*Changes*)
+let destr_ArrFq_exn ty =			
   match ty.ty_node with
-  | ArrFq lv5 -> lv5					(*Changes*)
+  | ArrFq lv5 -> lv5					
   | _     -> raise Not_found
 
-let destr_ArrG_exn ty =	   			            (*Changes*)
+let destr_ArrG_exn ty =	   			           
   match ty.ty_node with
-  | ArrG lv -> lv					(*Changes*)
+  | ArrG lv -> lv					
   | _     -> raise Not_found
 
-let destr_ArrBSs_exn ty =	   			(*Changes*)
+let destr_ArrBSs_exn ty =	   		
   match ty.ty_node with
-  | ArrBSs lv -> lv					(*Changes*)
+  | ArrBSs lv -> lv					
   | _     -> raise Not_found
 
 let destr_Prod_exn ty =
