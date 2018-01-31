@@ -67,12 +67,7 @@ bound_adv [
      };
      let A[i'] = T3/(T1^s1, T2^s2);    
    ]: b = b'.
-
-abstract 6 arg (g_1^(a1), g_1^(a2), g_1^(a3)).
-abstract 26 res (b = b').
-assumption_decisional weak_bbsig -> [6 26] q. 
 norm.
-
 indep!.
 print_proof!.
 qed.
