@@ -1,0 +1,79 @@
+(*Tracebility Signautre *)
+bilinear_map e : G_1 * G_2 -> G_t.
+adversary B1:() -> (G_1 * G_1 * G_1 * G_2).
+adversary A1:() -> (Fq).
+adversary A2:(G_1 * G_2 * G_1 * G_1 * G_1 * G_2 * ArrFq_q * ArrFq_q) -> (Bool).
+
+oracle Sign1():() -> (Fq).
+oracle Sign(): () -> (Bool).
+operator Hashes : Fq -> BS_s.
+operator Hash : (Fq * G_1 * G_1 * G_1 * G_1 * G_1 * G_2 * G_1 * G_1) -> (BS_s).
+
+adversary A_trace: (ArrG_q) -> Bool.
+
+assumption weak_bbsig  
+[mPri,x,y,rPri<-$ Fq; b <-A_trace(mPri, g_1^(1/(mPri+ x )));]
+[mPri,t <-$ Fq; b <-A_trace(mPri, g_1^(t));].   
+
+(* Signature adversary *)
+bound_adv [  
+
+  (* Generate GS adversary public key *)
+  (j, k, l, o) <- B1() with
+   {
+     a1,a3,a3,gamma <-$ Fq;
+     let u = g_1^(a1); let v = g_1^(a2); let h = g_1^(a3) let w = g_2^(gamma);
+     return (u, v, w, h)
+   };
+   s1,s2,<-$ Fq;
+   b <-$ Bool;
+   let pkgs = (g_1, g_2, j, k, l, o);
+
+   H'<-$ ArrFq_q;
+   H'' <-$ ArrBS_s;
+
+   H'' <- A1() with
+   Sign1()= {
+     i=i+1;
+     while(i<=q){         
+     r <-$ Fq;
+     H'[i] = Hashes(r);
+     (H'[i] = H'[i+1])? H''[i+1] = H''[i]:H''[i+1] = Hashes(H'[i+1]);
+     }
+     return (H'')
+   };
+   
+     X <-$ ArrFq_q; A <-$ ArrG_q; i'<-$Fq;
+     b' <- A2(g_1, g_2, j, k, l, o, m , A[i'], X[i']) with
+     sign()= {
+     alpha,beta <-$ Fq;
+     let T1 = g_1^ (a1 * alpha); let T2 = g_1 (a2 * beta);
+     let T3 = A[i'] * g_1 ^ (a2 * beta);
+     let delta1 = X[i'] * alpha; let delta2 = X[i'] * beta;
+
+     rAlpha, rBeta, rX , rDelta1, rDelta2 <-$ Fq;
+     let R1 = g_1 ^ (a1 * rAlpha); let R2 = g_1 ^ (a2 * rBeta);
+     let R4 = (T1 ^ rX) * g_1 ^ (-a2 * rDelta1);
+     let R5 = (T2 ^ rX) * g_1 ^ (-a2 * rDelta2);
+     let R3 = e(T3,g_2)^rX * e(g_1^a3,g_2^gamma)^(-ralpha-rBeta) * e(g_1^a3,g2)^(-rDelta1-rDelta2);
+     let c = Hash(m, T1, T2, T3, R1, R2, R3, R4, R5);
+     let sAlpha = rAlpha + c*alpha;
+     let sBeta = rBeta + c*delta2;
+     let sX = rX + c* X[i'];
+     let sDelta1 = rDelta1 + c*delta1;
+     let sDelta2 = rDelta2 + c*delta2;
+     let sigma = (T1, T2, T3, c, sAlpha, sBeta, sX, sDelta1, sDelta2);
+     return (sigma)
+     };
+     let A[i'] = T3/(T1^s1, T2^s2);    
+   ]: b = b'.
+
+abstract 6 arg (g_1^(a1), g_1^(a2), g_1^(a3)).
+abstract 26 res (b = b').
+assumption_decisional weak_bbsig -> [6 26] q. 
+norm.
+
+indep!.
+print_proof!.
+qed.
+extract "extraction/Anonimity_bbgs.zc".
