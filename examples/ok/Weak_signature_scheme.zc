@@ -99,3 +99,7 @@ indep!.
 print_proof!.
 qed.
 extract "extraction/weak_done.zc".
+
+
+(*The General case version of the zc code is provided in this link "https://github.com/sigcrypto/sigs-autognp/tree/AutoGnP/examples/new"
+*)
