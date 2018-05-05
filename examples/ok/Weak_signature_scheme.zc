@@ -1,3 +1,5 @@
+(* The General case version of the zc code is provided in the link "https://github.com/sigcrypto/sigs-autognp/tree/AutoGnP/examples/new"
+*)
 (* Weak Signature Scheme ((Special case q = 3)) *) 
 bilinear_map ez: G * G -> G_t. 
 bilinear_map zprime: G * G -> G_t. 
@@ -99,7 +101,3 @@ indep!.
 print_proof!.
 qed.
 extract "extraction/weak_done.zc".
-
-
-(*The General case version of the zc code is provided in this link "https://github.com/sigcrypto/sigs-autognp/tree/AutoGnP/examples/new"
-*)
