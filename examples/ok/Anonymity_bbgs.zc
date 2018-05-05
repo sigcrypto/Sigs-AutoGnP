@@ -1,4 +1,6 @@
-(*Special case q = 3 *)
+(* The General case version of the zc code is provided in the link "https://github.com/sigcrypto/sigs-autognp/tree/AutoGnP/examples/new"
+*)
+(*This is Special case: For q = 3 *)
 bilinear_map e : G_1 * G_2 -> G_t.   
 (* Signature adversary *)
 adversary A1: (G_1 * G_2 * G_1 * G_1 * G_1 * G_2 * Fq * G_1 * Fq * G_1* Fq * Fq * Fq) -> (BS_s * BS_s * BS_s). 
@@ -84,5 +86,4 @@ print_proof!.
 qed.
 extract "extraction/Anonimity_bbgs.zc".
 
-(*The General case version of the zc code is provided in this link "https://github.com/sigcrypto/sigs-autognp/tree/AutoGnP/examples/new"
-*)
+
