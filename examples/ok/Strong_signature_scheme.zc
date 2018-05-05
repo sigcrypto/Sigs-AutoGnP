@@ -1,3 +1,5 @@
+(* The General case version of the zc code is provided in the link "https://github.com/sigcrypto/sigs-autognp/tree/AutoGnP/examples/new"
+*)
 (* Strong Signature Scheme (Special case q = 3) *)   
 bilinear_map ez: G * G -> G_t. 
 bilinear_map e: G_1 * G_2 -> G_t. 
@@ -160,6 +162,3 @@ indep!.
 print_proof!.
 qed.
 extract "extraction/Strong_signature_scheme.zc".
-
-(*The General case version of the zc code is provided in this link "https://github.com/sigcrypto/sigs-autognp/tree/AutoGnP/examples/new"
-*)
