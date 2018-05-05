@@ -1,3 +1,5 @@
+(* The General case version of the zc code is provided in the link "https://github.com/sigcrypto/sigs-autognp/tree/AutoGnP/examples/new"
+*)
 (*Tracebility Signautre *)
 bilinear_map e : G_1 * G_2 -> G_t.
 adversary B1:() -> (G_1 * G_1 * G_1 * G_2).
