@@ -16,7 +16,7 @@ let mk_log level = mk_logger "Core.CoreRules" level "CoreRules.ml"
 let _log_t = mk_log Bolt.Level.TRACE
 let _log_d = mk_log Bolt.Level.DEBUG
 let log_i = mk_log Bolt.Level.INFO
-
+ 
 (* ** Types for proofs and tactics
  * ----------------------------------------------------------------------- *)
 
