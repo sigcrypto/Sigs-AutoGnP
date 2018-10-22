@@ -1,0 +1,131 @@
+bilinear_map e: G * G -> G_t. 
+    
+(*Oracles*)
+oracle B2 : () -> (G * G * G * G * G ).
+oracle B3 : () -> (G * G * G * G * G * G * G * G * G * G).
+oracle KeyGen : ()-> (Fq * G * G * G * G * G * G * G_t ).
+oracle B4 : () -> (G * G * G * G * G).
+ 
+(*adversary*)  
+adversary B1 : () -> (Fq * G * G * G * G * G * G * G_t).
+adversary A2 : (Fq * Fq * Fq * Fq * Fq * Fq * Fq * Fq * Fq * Fq ) -> (G * G * G * G * G * G * G * G * G * G ). 
+adversary A1 : (Fq * G * G * G_t * Fq * Fq * Fq) -> (G * G * G * G * G ).
+adversary A3 : (Fq * G * G * G_t * Fq * Fq * Fq) -> (G * G * G * G * G).
+adversary A4 : (Fq * G * G * G_t * Fq * Fq * Fq * G * G * G * G * G) -> Bool. 
+adversary A5 : (Fq * G * G * G_t) -> Bool.
+ 
+(*Assumptions*)
+adversary game3: (G * G * G * G * G * G * G * G * G_t) -> Bool.
+assumption SDA3_game3 
+[r1,r2,r3,y2,z2,c,d<-$ Fq; b <- game3(g^1,g^(r1),g^(r2),g^(r3),g^(y2),g^(z2),g^(c),g^(d),e(g,g)^((c*r2)+r3+(d*y2)+z2));]  
+ [r1,r2,r3,y2,z2,t,c,d <-$ Fq; b <- game3(g^1,g^(r1),g^(r2),g^(r3),g^(r2*y2),g^(r3*z2),g^(c),g^(d),e(g,g)^(t));].
+
+bound_adv [
+   u <-$Bool;
+   a1,a2,a3,rz,ry,c1,d1<-$ Fq; 
+   (N,gprime,g1,X,X3,Y,Z2,T) <- B1() with 
+   KeyGen()={  
+      p1,p2,p3,alpha,s,Nr,t<-$Fq;
+      let Y2r = g^p2;
+      let X2r = g^p2;
+      let Z2r = g^p2;
+
+      let Xr = (g^alpha) * X2r;
+      let Y3r = g^p3;
+      let Yr = g^s *Y2r;
+      let X3r = g^p3;
+      
+      let gprimer = g^Nr;
+      let T1 = (g_t)^(alpha*s);
+      let T2 = g_t;
+      let Tr = u?T1:T2;
+      return (Nr,gprimer,g,Xr,X3r,Yr,Z2r,Tr)
+      };
+
+      b <-$Bool; 
+      a,alpha,p2,p3,t <-$ Fq;
+      let X2r = g^p2;
+      let Z2r = g^p2;
+      let tmp = g^alpha *X2r;
+      let om = e(g,tmp);
+      let pk = (N,g,g^a,om); 
+
+      S1,S2,S3<-$Fq;
+      (kprimesf,lsf,ksf1,ksf2,ksf3) <- A1(N,g,g^a,om,S1,S2,S3) with 
+      B2()= {
+      let R0 = g^a;
+      let R0prime = g^p3;
+      Rprime1,Rprime2,Rprime3<-$ Fq;
+      let R1= g^Rprime1;
+      let R2= g^Rprime2;
+      let R3= g^Rprime3;
+      let kprimesfr = g^(alpha+(a*t))*((Z2r)^t)*R0;
+      let lsfr = g^(t) * R0prime;
+      let ksfr1 = g^(S1+t)*R1;
+      let ksfr2 = g^(S2+t)*R2;
+      let ksfr3 = g^(S3+t)*R3;
+      return(kprimesfr,lsfr,ksfr1,ksfr2,ksfr3);
+      };
+
+ 
+      m0,m1,row1,row2,row3,la,n,p1,s <-$Fq;
+      rc1,rc2,rc3<-$ Fq;
+      assert ((rc1*row1)<>0);
+      assert ((rc2*row2)<>0);
+      assert ((rc3*row3)<>0);
+      A11,A12,A13 <-$Fq;
+      U12,U13<-$Fq;
+
+      (Csf1,Csf2,Csf3,Csfprime1,Csfprime2,Csfprime3,csfdprime,D1,D2,D3) <- A2(m0,m1,A11,A12,A13,row1,row2,row3,la,n) with
+	B3()= {
+        C1,C2,C3,mb <-$ Fq; 
+        let Csf1primer= g^C1;
+        let Csf2primer= g^C2;
+        let Csf3primer= g^C3;
+        let Y2r = g^p2;
+        let Csfdprimer = g^s * Y2r;
+
+        let D1r = (g^s * Y2r) ^ rc1;
+        let D2r = (g^s * Y2r) ^ rc2;
+        let D3r = (g^s * Y2r) ^ rc3;
+        let Csf1r = (g^s * Y2r) ^ (A11 * a) * (g^s * Y2r)^(-rc1 * row1);
+        let Csf2r = (g^s * Y2r) ^ (A12 * U12) * (g^s * Y2r)^(-rc2 * row2);
+        let Csf3r = (g^s * Y2r) ^ (A13 * U13) * (g^s * Y2r)^(-rc3 * row3);
+        return (Csf1r,Csf2r,Csf3r,Csf1primer,Csf2primer,Csf3primer,Csfdprimer,D1r,D2r,D3r)
+      }; 
+
+        S11,S12,S13<-$ Fq;
+        (Kq,Lq,K11,K12,K13)<- A3(N,g,g^a,om,S11,S12,S13) with
+        B4() = {
+         Rprime1,Rprime2,Rprime3<-$ Fq;
+         let R0= g^a;
+         let R0prime= g^p3;
+         let Kprimer = g^(alpha+(a*t))*((Z2r)^t)*R0;
+         let R1 = g^Rprime1;
+         let R2 = g^Rprime2;
+         let R3 = g^Rprime3;
+         let Lr = g^(t) * R0prime;
+         let K11r = g^(S11+t) * R1;
+         let K12r = g^(S12+t) * R2;
+         let K13r = g^(S13+t) * R3;
+         return(Kprimer,Lr,K11r,K12r,K13r);
+          }; 
+ b' <- A4(N,g,g^a,om,S11,S12,S13,Kq,Lq,K11,K12,K13); 
+]:b = b'.
+norm.    
+move a1 1.
+move a2 2.
+move a3 3.
+move ry 4.
+move rz 5.
+move c1 6.
+move d1 7.
+abstract 8 arg (g^1,g^(a1),g^(a2),g^(a3),g^(rz),g^(ry),g^(c1),g^(d1),e(g,g)^((c1*a2)+a3+(d1*ry)+rz)).
+abstract 47 res (b = b'). 
+assumption_decisional SDA3_game3-> [8 res] q. 
+         
+norm.
+indep!.
+print_proof!.
+qed.
+
