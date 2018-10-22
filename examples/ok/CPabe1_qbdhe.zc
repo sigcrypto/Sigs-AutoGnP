@@ -49,20 +49,19 @@ bound_adv [
     alphapri,M11,M12,M21,M22,r <-$ Fq;
     Z1,Z2,Z3<-$ Fq; 
  
-    let v0 = g^(a) * g^(a) * M11a; (* *M11 missing *)
-    let v1 = v0 * g^(a*a)  * M12a ; (* *M12 missing *) 
+    let v0 = g^(a) * g^(a) * M11a; 
+    let v1 = v0 * g^(a*a)  * M12a ;
     let H1 = g^Z1 * v1;
-    let v2 = v1 * g^(a)  * M21a ; (* *M21 missing *)
-    let v3 = v2 * g^(a*a) * M22a ; (* *M22 missing *)
+    let v2 = v1 * g^(a)  * M21a ; 
+    let v3 = v2 * g^(a*a) * M22a ; 
     let H2 = g^Z2 * v3;
     let z = e(g,g^a) * e(g,g)^alphapri;
-    (* let pk = (g,z,g^a,H1,H2);*)
     let sk=g^alphapri;
      
     (S1,S2,S3) <- Aq2(g,z,g^a,H1,H2);
 
     (W1,W2,W3)<- Aq4(S1,S2,S3,M11a,M12a,M21a,M22a,row);
-    (* (Kprim1,Kprim2,Kprim3,L1,L2,L3,K1,K2,K3)*)
+
     (Kprim1,Kprim2,Kprim3) <- Aq3(g,z,g^a,H1,H2,S1,S2,S3) with
          Bq()= {
     (*guard(S1=0/\S2=0/\S3=0/\M11a=0/\M12a=0/\M21a=0/\M22a=0/\row=0); *)
@@ -91,19 +90,14 @@ bound_adv [
          (m0,m1)<- Aq5(S1,S2,S3,g,z,g^a,H1,H2);
          (Cprime,C1,C2)<- Aq6(m0,m1,S1,S2,S3,sk,g,z,g^a,H1,H2,M11a,M12a,M21a,M22a,row) with
          Bq1() = {
-         (* b<-$ Bool;*)
+
          Y1,Y2,Y3,M12b,M22b<-$Fq;
-         (* let T0aa = (g_t)^((a*a*a*a)*s);  
-         let T1aa = g_t^1;
-         let Ta = b?T0:T1;
-         let mb = b?m0:m1;
-         let ca= mb * T0 * e(g^s,g^alphapri); *) (*Troublesome *)
          let Cprime1=g^s;
 
-         let p1 = g^a * g^(M12b*Y2); (*M12a conflict*)
+         let p1 = g^a * g^(M12b*Y2); 
          let C1a = p1 * g^(s*-Z1) ;  
 
-         let p2 = g^a * g^(M22b*Y2); (*M22a conflict*)
+         let p2 = g^a * g^(M22b*Y2); 
          let C2a = p1 * g^(s*-Z2);
          return(Cprime1,C1a,C2a)
          }; 
@@ -147,13 +141,9 @@ move a6' 6.
 move rx 7.
 abstract 8 arg (g^1,g^(a1'),g^(a2'),g^(a3'),g^(a5'),g^(a6'),g^rx,g_t^(a4'*rx)).
 abstract 40 res (b = b'). 
-assumption_decisional CPabe_qbdhe -> [8 res] q. 
+assumption_decisional CPabe1_qbdhe -> [8 res] q. 
 norm.
     
 indep!.
 print_proof!.
 qed.
-
-
-
-
