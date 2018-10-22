@@ -1,0 +1,184 @@
+bilinear_map e: G * G -> G_t.  
+
+(* Oracles *) 
+oracle dbdheGen : () -> (G * G * G * G * G * G * G * G_t).
+oracle Bq : () -> (G * G * G * G * G * G).
+oracle Bq1 : () ->(G * G * G * G * G).
+oracle Bq2 : () -> (G * G * G * G * G * G).
+oracle pdbdheGen : () -> (G * G * G * G * G * G * G * G * G * G * G * G * G * G * G * G * G * G* G * G * G * G * G * G * G * G * G * G).
+   
+(* adversary *) 
+adversary AFinal : (G * G * G * G * G * G) -> Bool.
+adversary B1 : () -> (G * G * G *  G * G * G * G * G_t).
+adversary Aq1 : () -> (G * G * G * G * Fq * Fq * Fq).
+adversary Aq2 : (G * G_t * G * G * G) -> (G * G * G).
+adversary Aq3 : (G * G_t * G * G * G * G * G * G) -> (G * G * G * G * G * G).
+adversary Aq4 : (G * G * G * G * G * G * G * Fq) -> (Fq * Fq * Fq).
+adversary Aq5 : (G * G * G * G * G_t * G * G * G * G) -> (Fq * Fq).
+adversary Aq6 : (Fq * Fq * G * G * G * G * G * G_t * G * G * G * G * G * G * G * Fq) -> (G * G * G * G * G).
+adversary Aq7 : (G * G_t * G * G * G * G * G * G * G * G)  -> (G * G).
+adversary Aq8 : (G * G_t * G * G * G * G * G) -> (G * G * G * G * G * G). 
+adversary B1z :()-> (G * G * G * G * G * G * G * G * G * G * G * G * G * G * G * G * G * G* G * G * G * G * G * G * G * G * G * G).
+adversary A1 : () -> (G * G * G * G * G * G * G * G * G * Fq * Fq *Fq). 
+adversary AFinalz : (Fq * Fq * Fq) -> Bool.  
+
+(*Assumption*)
+adversary pdbdhe: (G * G * G * G * G * G * G * G_t) -> Bool. 
+assumption CPabe2_pdbdhe        
+[r1,r2,r3,r4,r5,r6,s,c<-$ Fq; b <- pdbdhe(g^1, g^(r1/c), g^(r2/c), g^(r3/c),g^(r5/c),g^(r6/c),g^(s*c),e(g,g)^((r4)*s));]
+[t,r1,r2,r3,r4,r5,r6,s,c <-$ Fq; b <- pdbdhe(g^1, g^(r1/c), g^(r2/c), g^(r3/c),g^(r5/c),g^(r6/c),g^(s*c),e(g,g)^(t));]. 
+
+bound_adv [
+
+     a1',a2',a3',a4',a5',a6',rx,ry<-$ Fq; 
+     b <-$Bool;
+     u <-$Bool;
+     a,s,b1,b2,b3<-$ Fq;
+  assert(b1<>0);assert(b2<>0);assert(b3<>0);
+
+    (gz,gz1,M1,M2,M3,M5,M6,M11,M12,M13,M21,M22,M23,M31,M32,M33,M15,M16,M25,M26,M35,M36,M12a',M13a',M22a',M23a',M32a',M33a')<-B1z() with
+    pdbdheGen() = { 
+    let M1s = g^(a);
+    let M2s = g^(a*a);
+    let M3s = g^(a*a*a);
+    let M5s = g^(a*a*a*a*a);
+    let M6s = g^(a*a*a*a*a*a);
+    
+    let M12s = g^((a)/b1);
+    let M13s = g^((a*a)/b1); 
+          let M11s = g^(s*b1);
+    let M22s = g^((a)/b2);
+    let M23s = g^((a*a)/b2); 
+          let M21s = g^(s*b2);
+    let M32s = g^((a)/b3);
+    let M33s = g^((a*a)/b3);
+          let M31s = g^(s*b2);
+
+
+    let M15s = g^((a*a*a*a*a*a)/b1);
+    let M16s = g^((a*a*a*a*a*a*a)/b2);
+
+    let M25s = g^((a*a*a*a*a*a)/b2);
+    let M26s = g^((a*a*a*a*a*a*a)/b2);
+
+    let M35s = g^((a*a*a*a*a*a)/b3);
+    let M36s = g^((a*a*a*a*a*a*a)/b3);
+
+    let M12'= g^((a*a*s*b3)/b1);
+    let M13'= g^((a*a*a*s*b3)/b1);
+    let M22'= g^((a*a*s*b2)/b2);
+    let M23'= g^((a*a*a*s*b2)/b2);
+    let M32'= g^((a*a*s*b1)/b3);
+    let M33'= g^((a*a*a*s*b1)/b3);
+    let gs=g^s;
+ 
+    return(g,gs,M1s,M2s,M3s,M5s,M6s,M11s,M12s,M13s,M21s,M22s,M23s,M31s,M32s,M33s,M15s,M16s,M25s,M26s,M35s,M36s,M12',M13',M22',M23',M32',M33')
+  };
+
+   (M11a,M12a,M13a,M21a,M22a,M23a,M31a,M32a,M33a,l,n,row) <- A1();
+      alphaprime,r <-$Fq;
+    let z = e(g^a,g^(a*a*a)) * e(g,g)^alphaprime;
+
+    Z1,Z2,Z3,B1,B2,B3 <-$ Fq;
+
+    let v0 = g^(a) * g^(a) * M11a; 
+    let v1 = v0 * g^(a*a)  * M12a ;
+    let H1 = g^Z1 * v1;
+    let v2 = v1 * g^(a)  * M21a ;
+    let v3 = v2 * g^(a*a) * M22a ;
+    let H2 = g^Z2 * v3;
+    let pk = (g,z,g^a,H1,H2); let sk=g^alphaprime;
+ 
+    (S1,S2,S3) <- Aq2(g,z,g^a,H1,H2);
+    (W1,W2,W3)<- Aq4(S1,S2,S3,M11a,M12a,M21a,M22a,row);
+      (*---------------------------------*)
+
+      (Kprim1,Kprim2,Kprim3,L1,L2,L3) <- Aq3(g,z,g^a,H1,H2,S1,S2,S3) with
+      Bq()= {
+(*   guard(S1=0/\S2=0/\S3=0/\M11a=0/\M12a=0/\M21a=0/\M22a=0/\row=0); *)
+         let L1a = g^(a * W1);
+         let L2a = g^(a * a * W2);
+         let L3a = g^(a * a * a * W3);
+
+         let L1b = L1a * g^r;
+         let L2b = L2a * g^r;
+         let L3b = L3a * g^r;
+         let Kprime1a = g^(a*W1);
+         let Kprime2a = g^(a*a*W2);
+         let Kprime3a = g^(a*a*a*W3);
+         let Kprime1 = Kprime1a * g^(a*r) * g^alphaprime;
+         let Kprime2 = Kprime2a * g^(a*r) * g^alphaprime;
+         let Kprime3 = Kprime3a * g^(a*r) * g^alphaprime;
+
+         let p1 = g^((a*a*a)/b3) * g^W3;
+         let p2 = g^((a*a*a*r)/b3) * M22a;
+         let K1a = L1b^Z1 * p2;
+         let K2a = L2b^Z2 * p2; 
+         let K3a = L3b^Z3 * p2;
+         return(Kprime1a,Kprime2a,Kprime3a,L1b,L2b,L3b)
+       };
+
+       (m0,m1)<- Aq5(S1,S2,S3,g,z,M1,H1,H2,sk);
+       
+   Y1,Y2,Y3,M12b,M22b,R1,R2,R3<-$Fq;
+assert((R1-(s*b1))<>0); assert((R2-(s*b2))<>0);
+(Cprime,C1,C2,D1,D2)<- Aq6(m0,m1,S1,S2,S3,sk,g,z,g^a,H1,H2,M11a,M12a,M21a,M22a,row) with
+Bq1() = {
+  let Cprime1=g^s;
+  let p1 = g^a * g^(M12b*Y2);
+  let p2 = g^(((a*a)*s*(b2/b1))+(M22b*Y2));
+  let C1a = p1 * g^(b1*s*-Z1) * p2 * g^R1; 
+  let C2a = p1 * g^(b2*s*-Z2) * p2 * g^R2;
+  let D1a = g^(-(R1-(s*b1)));
+  let D2a = g^(-(R2-(s*b2))); 
+  return(Cprime1,C1a,C2a,D1a,D2a);
+};  
+ 
+(Sa2,Sa3)<-Aq7(g,z,g^a,H1,H2,Cprime,C1,C2,D1,D2);
+
+(K1Pri1,K1Pri2,K1Pri3,Lz1,Lz2,Lz3)<- Aq8(g,z,g^a,H1,H2,Sa2,Sa3) with
+  Bq2() = {
+  (*   guard(S1=0/\S2=0/\S3=0/\M11a=0/\M12a=0/\M21a=0/\M22a=0/\row=0); *)
+ 
+         let L1a = g^(a*W1); 
+         let L2a = g^(a * a * W2);
+         let L3a = g^(a * a * a * W3); 
+
+         let L1b = L1a * g^r;
+         let L2b = L2a * g^r;
+         let L3b = L3a * g^r;
+         let Kzprime1a = g^(a*W1);
+         let Kzprime2a = g^(a*a*W2);
+         let Kzprime3a = g^(a*a*a*W3);
+         let Kzprime1 = Kzprime1a * g^(a*r) * g^alphaprime;
+         let Kzprime2 = Kzprime2a * g^(a*r) * g^alphaprime;
+         let Kzprime3 = Kzprime3a * g^(a*r) * g^alphaprime;
+
+         let p1 = g^((a*a*a)/b3) * g^W3;
+         let p2 = g^(((a*a*a*a)/b3)*r) * M22a;  
+         let K1a = L1b^Z1 * p2;
+         let K2a = L2b^Z2 * p2; 
+         let K3a = L3b^Z3 * p2; 
+         return(Kzprime1,Kzprime2,Kzprime3,L1b,L2b,L3b);
+       };
+ b' <- AFinal(K1Pri1,K1Pri2,K1Pri3,Lz1,Lz2,Lz3); 
+
+]: b = b'.	
+norm.
+ 
+move a1' 1.
+move a2' 2.
+move a3' 3.
+move a4' 4. 
+move a5' 5.
+move a6' 6.
+move rx 7.
+move ry 8.
+abstract 9 arg (g^1,g^(a1'/ry),g^(a2'/ry),g^(a3'/ry),g^(a5'/ry),g^(a6'/ry),g^(rx*ry),g_t^(a4'*rx)).
+abstract 48 res (b = b'). 
+assumption_decisional CPabe2_pdbdhe -> [9 res] q. 
+norm.
+
+indep!.
+print_proof!.
+qed.
