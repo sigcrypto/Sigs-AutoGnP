@@ -1,3 +1,5 @@
+(*General case of this game is provided at https://github.com/sigcrypto/sigs-autognp/tree/AutoGnP/examples/new/game1g_cpabe.zc*)
+
 bilinear_map eg: G * G -> G_t.
 
 (* Oracles *) 
