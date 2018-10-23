@@ -1,7 +1,7 @@
 bilinear_map e: G * G -> G_t.
 
 (* Oracles *)
-oracle B2 : () -> (G * G * G * G * G ).
+oracle B2 : () -> (G * G * G * G * G ). 
 oracle B3 : () -> (G * G * G * G * G * G * G * G * G * G).
 oracle dbdhegen : ()-> (Fq * G * G * G * G * G * G * G_t ).
 oracle B4 : () -> (G * G * G * G * G).
