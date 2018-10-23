@@ -1,0 +1,143 @@
+bilinear_map e: G * G -> G_t. 
+(* Oracles *) 
+oracle dbdheGen : () -> (G * ArrG * ArrG * G * G_t).
+oracle Bq : () -> (G * G * G * G * G * G * G * G * G).
+oracle Bq1 : () ->(G * G * G).
+oracle Bq2 : () -> (G * G * G * G * G * G * G * G * G).
+  
+(* adversary *)
+adversary AFinal : (G * G * G * G * G * G * G * G * G) -> Bool.
+adversary B1 : () -> (G * ArrG * ArrG * G * G_t).
+adversary Aq1 : () -> (G * G * G * G * Fq * Fq * Fq).
+adversary Aq2 : (G * G_t * G * G * G) -> (G * G * G).
+adversary Aq3 : (G * G_t * G * G * G * G * G * G) -> (G * G * G * G * G * G * G * G * G).
+adversary Aq4 : (G * G * G * G * G * G * G * Fq) -> (Fq * Fq * Fq).
+adversary Aq5 : (G * G * G * G * G * G * G * G_t * G * G * G) -> (Fq * Fq).
+adversary Aq6 : (Fq * Fq * G * G * G * G * G * G_t * G * G * G * G * G * G * G * Fq) -> (G * G * G).
+adversary Aq7 : (G * G_t * G * G * G) -> (G * G).
+adversary Aq8 : (G * G_t * G * G * G * G * G) -> (G * G * G * G * G * G * G * G * G). 
+
+adversary qbdhe: (G * G * G * G * G * G * G * G_t) -> Bool. 
+assumption CPabe1_qbdhe      
+[r1,r2,r3,r4,r5,r6,s<-$ Fq; b <- qbdhe(g^1, g^r1, g^r2, g^r3,g^r5,g^r6,g^s,e(g,g)^((r4)*s));]
+[t,r1,r2,r3,r4,r5,r6,s <-$ Fq; b <- qbdhe(g^1, g^r1, g^r2, g^r3,g^r5,g^r6,g^s,e(g,g)^(t));]. 
+    
+  
+bound_adv [ 
+
+ b <-$Bool;
+ u <-$Bool;
+ s<-$ Fq;
+ a,ae<-$ ArrG;
+ 
+ (g1,a,ae,ar,T)<-B1() with
+ dbdheGen() = {     
+                  for(i=1;i<=q;i=i++){
+                           let temp1 = g^(a^i); 
+                           write(a,i,temp);}  
+                  let T0a = (g_t)^((a^(q+1))*s);
+                  let T1a = g_t^1;           
+                  for(i=q+2;i<=2q;i=i+1){   
+                           let temp2 = g^(a^i) 
+                           write(ae,i,temp);}        
+                  let as = g^s;
+                  let Ta =  b?T0a:T1a;  
+                  return(g,a,ae,as,Ta);
+    }; 
+
+    (M,l,n,row) <- Aq1();
+    alphapri <-$ Fq;
+    r<-$ Fq; 
+    Z<-$ ArrFq;
+
+    for(i=1;i<l;i++){
+         for(j=0;j<n;j++)
+            v = v * g^((a*j)*read(M,i,j));      
+         write(H,i,g^(read(z,i)*v);
+         }
+    let z = e(g,g^a) * e(g,g)^alphapri;
+    let pk = (g,z,g^a,H); let sk=g^alphapri;
+    
+    (S) <- Aq2(g,z,g^a,H);
+
+    (W)<- Aq4(S,M,row);
+    (Kprim,L,K) <- Aq3(g,z,g^a,H,S) with
+      Bq()= {
+(*guard(S1=0/\S2=0/\S3=0/\M11a=0/\M12a=0/\M21a=0/\M22a=0/\row=0);*)
+     
+         for(i=0;i<q;i++){    
+             let L = g^((a^i)*read(W,i));         
+             let L = L * g^r; 
+             }
+         let Kprim = Kprim * g^(a*r) * g^alphapri;
+         for(i=i-1;i<q;i++)
+                  for(j=1;j<q;j++)
+                           for(k=1;k<q;k++)
+                           let p1 = g^(a^k)*g^read(W,k));
+                  let p2 = g^((a^j)*r) * g^read(M,i,j);
+         write(K,i,L^(read(Z,i))*p2);
+         return(Kprim,L,K)
+         };  
+         (m0,m1)<- Aq5(K,S,g,z,g^a,H);
+
+(Cprime,C,c)<- Aq6(m0,m1,S,sk,g,z,g^a,H,M,row) with
+Bq1() = {
+ (* b<-$ Bool;*)
+  M12b,M22b<-$Fq; Y <-$ArrFq;
+ (* let T0aa = (g_t)^((a*a*a*a)*s);  
+  let T1aa = g_t^1;
+  let Ta = b?T0:T1;
+  let mb = b?m0:m1;
+  let ca= mb * T0 * e(g^s,g^alphapri); *) (*Troublesome *)
+  let Cprime1=g^s;
+
+         for(i=1;i<n;i++)
+                  for(j=1;j<n;j++)         
+                  let p1 = g^a * g^(read(M,i,j)*read(Y,j));
+           write(C,i,p1*g^(s*(-read(Z,i))));
+           return(Cprime1,C,ca)
+};
+
+(Sa)<- Aq7(g,z,g^a,H);
+
+(K',L,K)<- Aq8(g,z,g^a,H,S) with
+  Bq2() = {
+  (*   guard(S1=0/\S2=0/\S3=0/\M11a=0/\M12a=0/\M21a=0/\M22a=0/\row=0); *)
+ 
+         for(i=(q1+1);i<q;i++){
+             write(L,i,g^(a^i)read(W,i));
+             write(L,i,read(L,i)*g^r);
+             }
+
+         for(i=(q+1);i<q;i++)
+             write(K',i,g^((a^i)*(-read(W,i)));
+         let K' = K' * g^(a*r) * g^alphapri;
+
+         for(i=(q1+1);i<q;i++){
+                  for(j=(q1+1);j<q;j++){
+                           for(k<(q+1);k<q;k++){
+                           let p1 = g^(a^k).g^(read(W,k));
+                  p2 = g^((a^j)*r) * g^(read(M,i,j));
+         return(K',L,K);
+       };
+
+b' <- AFinal(K',L,K);
+
+]:b = b'.
+norm.
+
+move a1' 1.
+move a2' 2.
+move a3' 3.
+move a4' 4. 
+move a5' 5.
+move a6' 6.
+move rx 7.
+abstract 8 arg (g^1,g^(a1'),g^(a2'),g^(a3'),g^(a5'),g^(a6'),g^rx,g_t^(a4'*rx)).
+abstract 40 res (b = b'). 
+assumption_decisional CPabe_qbdhe -> [8 res] q. 
+
+norm.
+indep!.
+print_proof!.
+qed.

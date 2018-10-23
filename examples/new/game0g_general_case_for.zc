@@ -1,0 +1,114 @@
+bilinear_map e: G * G -> G_t.
+
+(* Oracles *)
+oracle B2 : () -> (G * G).
+oracle B3 : () -> (G * G * G * G * G * G * G * G * G * G).
+oracle KeyGen : ()-> (Fq * G * G * G * G).
+oracle B4 : () -> (G * G * G * G * G).
+
+(* adversary *)
+adversary B1 : () -> (Fq * G * G * G * G).
+adversary A2 : (Fq * Fq * Fq * Fq * Fq * Fq * Fq * Fq * Fq * Fq * G) -> (G * G * G * G * G * G * G * G * G * G).
+adversary A1 : (Fq * G * G * G_t * Fq * Fq * Fq) -> (G * G).
+adversary A3 : (Fq * G * G * G_t * Fq * Fq * Fq) -> (G * G * G * G * G).
+adversary A4 : (Fq * G * G * G_t * Fq * Fq * Fq * G * G * G * G * G) -> Bool.
+adversary A5 : (Fq * G * G * G_t) -> Bool.
+
+(*Assumption*)
+adversary game0: (G * G * G_t) -> Bool.
+assumption SDA1_game0
+[r1<-$ Fq; b <- game0(g^1,g^(r1),g_t^(r1));] 
+[r1,t <-$ Fq; b <- game0(g^1,g^(r1),g_t^(t));].
+
+bound_adv [
+    u <-$Bool;
+    (N,gprime,g1,X3,T) <- B1() with
+    KeyGen()={
+     p1,p2,p3,Nr<-$Fq;(*gprime cannot be FQ ask*)
+    let gprimer = g^Nr;
+    let X3r = g^p3; (*ASK*)
+    let T1 = g^(p1*p2);
+    let T2 = g^(p1);
+    let Tr = u?T1:T2;
+    return (Nr,gprimer,g,X3r,Tr)(*REmoved e and gt*)
+  };
+b <-$Bool;
+  a,alpha <-$ Fq;
+  let pk = (N,g,g^a,g_t^alpha);
+  let om = g_t^alpha;
+
+  S1<-ArrFq;(*Array Inclusion*)
+  S1,S2,S3,t<-$Fq;(*Array creation*)
+  (kprime,L) <- A1(N,g,g^a,om,S1,S2,S3) with
+    B2()= {
+        let R0 = g^a; (*belongs to error*)
+        let R0prime = g^a; (*belongs to error*)
+        Rprime<-$ ArrFq; (Array  declared) (*new*)
+	      K<-$ArrFq;(*array*)(*new*)
+	      R <-$ArrFq;(*array
+        let Kprimer = g^(alpha + (a*t)) * R0;
+	      let Lr = g^(t) * R0prime;
+
+	      (* for loop implementation*)
+	     for(i=0;i<q;i++);
+	      {
+	      let K[i] = g^p1 *p3;
+	      let R[i] = g^Rprime[i];
+	      Kprimer = g^(S[i] + t) * R[i];
+        return(Kprimer,Lr)
+        };
+
+  m0,m1,row1,row2,row3,l,n <-$Fq;
+  r,C,v,Cprime,vprime,row<-$ ArrFq;
+
+	for(i=0;i<q;i++);
+	{
+        assert ((r[i]*i)<>0);
+	}
+  A<-$ArrFq;
+
+  (C,Cprime,cdprime,D) <- A2(m0,m1,A,row,l,n,T) with
+	B3()= {
+        mb <-$ Fq; (*mb is Fq?*)
+	      for(i=0;i<q;i++);
+	      {
+        let Cprimer[i]= g^C[i];
+	      let Vprime[i] = g^v[i];
+        let Cr[i] = T^(a * A[i] * v[i]) * T^(-r[i] * i);  (*Problem with Vprime and v1 ask *)
+        let Cdprimer[i] = g^Cr[i];
+        let Dr[i] = T^r[i];
+        }
+        return (Cr,Cprimer,Cdprimer,Dr)(*Ask about return*)
+        };
+
+         S,r<-$ Fq;
+          (Kprime,Lt,K)<- A3(N,g,g^a,om,S) with
+          B4() = {
+         Rprime<-$ ArrFq;
+         let R0= g^a;
+         let Rprime0= g^a;
+         let Kprimer = g^(alpha + (a*t)) * R0;
+         let Lr = g^(t) * Rprime0;
+        for(i=0;i<q;i++);
+         {
+         let R[i] = g^Rprime[i];
+         let Kr[i] = g^(S[i]+t) * R1;
+         }
+         return(Kprimer,Lr,Kr)
+          };
+
+
+ b' <- A4(N,g,g^a,om,S,Kprime,Lt,K); (*Need to check the inputs  *)
+ (* b' <-A5(N,g,g^a,om); *)
+
+]: b = b'.
+
+move a1 1.
+abstract 2 arg (g^1,g^(a1),g_t^(a1)).
+abstract 36 res (b = b'). 
+assumption_decisional SDA1_game0-> [2 res] q. 
+norm.
+
+indep!.
+print_proof!.
+qed.

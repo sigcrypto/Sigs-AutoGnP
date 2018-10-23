@@ -1,0 +1,146 @@
+bilinear_map e: G * G -> G_t.
+
+(* Oracles *)
+oracle B2 : () -> (G * G * G * G * G ).
+oracle B3 : () -> (G * G * G * G * G * G * G * G * G * G).
+oracle dbdhegen : ()-> (Fq * G * G * G * G * G * G * G_t ).
+oracle B4 : () -> (G * G * G * G * G).
+
+(* adversary *)
+adversary B1 : () -> (Fq * G * G * G * G * G * G * G_t).
+adversary A2 : (Fq * Fq * Fq * Fq * Fq * Fq * Fq * Fq * Fq * Fq ) -> (G * G * G * G * G * G * G * G * G * G ).
+adversary A1 : (Fq * G * G * G_t * Fq * Fq * Fq) -> (G * G * G * G * G ).
+adversary A3 : (Fq * G * G * G_t * Fq * Fq * Fq) -> (G * G * G * G * G).
+adversary A4 : (Fq * G * G * G_t * Fq * Fq * Fq * G * G * G * G * G) -> Bool.
+adversary A5 : (Fq * G * G * G_t) -> Bool.
+
+(*Assumptions*)
+adversary game3: (G * G * G * G * G * G * G * G * G_t) -> Bool.
+assumption SDA3_game3 
+[r1,r2,r3,y2,z2,c,d<-$ Fq; b <- game3(g^1,g^(r1),g^(r2),g^(r3),g^(y2),g^(z2),g^(c),g^(d),e(g,g)^((c*r2)+r3+(d*y2)+z2));]  
+ [r1,r2,r3,y2,z2,t,c,d <-$ Fq; b <- game3(g^1,g^(r1),g^(r2),g^(r3),g^(r2*y2),g^(r3*z2),g^(c),g^(d),e(g,g)^(t));].
+
+bound_adv [
+    u <-$Bool;
+    (N,gprime,g1,X,X3,Y,Z2,T) <- B1() with (* included X1*X2,Y1*Y2 terms*)
+    KeyGen()={
+      p1,p2,p3,alpha,s,Nr,t<-$Fq;(*gprime cannot be FQ ask*)(*1.1.1*)
+      let Y2r = g^p2; (*1.1.2*)
+      let X2r = g^p2;
+      let Z2r = g^p2;
+
+      let Xr = (g^alpha) * X2r;
+      let Y3r = g^p3;(*1.1.2*)
+      let Yr = g^s *Y2r;
+      let X3r = g^p3;(*1.1.2*)
+
+    let gprimer = g^Nr;
+    (* let N = p1 * p2 * p3;*)
+    (*X3 <- Gp3; Check*) (*ASK*)
+          (* b <-$Bool;(b?T <-$ Gp1p2):(T<-$Gp1)*)
+    let T1 = (g_t)^(alpha*s);
+    let T2 = g_t;
+    let Tr = u?T1:T2;
+    return (Nr,gprimer,g,Xr,X3r,Yr,Z2r,Tr)(*REmoved e and gt*)
+  };
+
+(* part 2 *)
+
+  b <-$Bool;  (*2*)
+  a,alpha,p2,p3 <-$ Fq; (*3*)
+  let X2r = g^p2;
+  let Z2r = g^p2;
+  let tmp = g^alpha *X2r;
+  let om = e(g,tmp);
+  let pk = (N,g,g^a,om); (*3*)
+
+  S3<-$ ArrFq;(*Array creation*) (*4*)
+  (kprimesf,lsf,ksf) <- A1(N,g,g^a,om,S) with (*5*)
+  Rprime<-$ ArrFq;
+  B2()= {
+	t<-$Fq;
+        let R0 = g^a;
+        let R0prime = g^p3; (*belongs to error*)
+        let kprimesfr = g^(alpha+(a*t))*((Z2r)^t)*R0;
+        let lsfr = g^(t) * R0prime;
+        for(i=0;i<q;i++);
+        {
+
+        let R[i]= g^Rprime[i];
+        let ksfr[i] = g^(S[i]+t)*R[i];
+        }
+
+	return(kprimesfr,lsfr,ksfr);
+
+      };
+          (*----------------End of Part 2 ----------------------------------------------------*)
+
+      (*------------------------Part 3------------------*)
+
+      m0,m1,i,la,n,p1,s <-$Fq;
+      rc<-$ ArrFq;
+      for(i=0;i<q;i++);
+    	{
+            assert ((r[i]*i)<>0);
+    	}
+      A<-$ArrFq;
+      U,C<-$ArrFq;
+      let U[1] = a;
+
+      (Csf,Csfprime,csfdprime,D) <- A2(m0,m1,A,i,la,n) with
+	B3()= {
+
+        mb <-$ Fq; (*mb is Fq?*)
+        let Y2r = g^p2;
+        let Csfdprimer = g^s * Y2r;
+        for(i=0;i<q;i++);
+        {
+        let Csfprimer[i]= g^C[i];
+        let Dr[i] = (g^s * Y2r) ^ rc[i];
+        let Csfr[i] = (g^s * Y2r) ^ (A[i] * a) * (g^s * Y2r)^(-rc[i] * i);
+        }
+
+        return (Csfr,Csfprimer,Csfdprimer,Dr)(*Ask about return*);
+      };
+
+          (*---------------------------end of PART3-------------------------------*)
+      (*-------------------------------part 4-------------------------------------*)
+
+        S<-$ ArrFq;
+        (Kq,Lq,K)<- A3(N,g,g^a,om,S) with
+          B4() = {
+            t<-$Fq;
+         Rprime<-$ ArrFq;
+         let R0= g^a;
+         let R0prime= g^p3;
+         let Kprimer = g^(alpha+(a*t))*((Z2r)^t)*R0;
+         let Lr = g^(t) * R0prime;
+        for(i=0;i<q;i++);
+         {
+         let R[i] = g^Rprime[i];
+         let Kr[i] = g^(S[i]+t) * R[i];
+         }
+         return(Kprimer,Lr,Kr);
+        };
+ (*-----------------------------------end of PART 4----------------------*)
+
+b' <- A4(N,g,g^a,om,S,Kq,Lq,K); (*Need to check the inputs  *)
+ (* b' <-A5(N,g,g^a,om); *)
+
+  ]:b = b'.
+norm.
+
+move a1 1.
+move a2 2.
+move a3 3.
+move ry 4.
+move rz 5.
+move c1 6.
+move d1 7.
+abstract 8 arg (g^1,g^(a1),g^(a2),g^(a3),g^(rz),g^(ry),g^(c1),g^(d1),e(g,g)^((c1*a2)+a3+(d1*ry)+rz)).
+abstract 47 res (b = b'). 
+assumption_decisional SDA3_game3-> [8 res] q. 
+
+indep!.
+print_proof!.
+qed.
