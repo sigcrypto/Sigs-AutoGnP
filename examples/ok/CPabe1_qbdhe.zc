@@ -1,3 +1,5 @@
+(*General case of this game is provided at https://github.com/sigcrypto/sigs-autognp/tree/AutoGnP/examples/new/CPabe1g_qbdhe.zc*)
+
 bilinear_map e: G * G -> G_t.  
 
 (*Oracle*)
