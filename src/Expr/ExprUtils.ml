@@ -8,6 +8,7 @@ open Syms
 open Abbrevs
 open Util
 
+
 let ty_prod_vs vs =
   match List.map (fun vs -> vs.VarSym.ty) vs with
   | [a] -> a
